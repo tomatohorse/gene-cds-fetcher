@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gene CDS Fetcher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --surface-hover: #243044;
+      --border: #2d3a4d;
+      --text: #e6edf3;
+      --text-muted: #8b9cb3;
+      --accent: #58a6ff;
+      --accent-dim: #388bfd66;
+      --success: #3fb950;
+      --error: #f85149;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 2rem;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    select, input[type="text"] {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    select:hover, input[type="text"]:hover {
+      border-color: #3d4d66;
+    }
+
+    select:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b9cb3' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.9rem center;
+      padding-right: 2rem;
+    }
+
+    button {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 0.7rem 1.25rem;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      align-self: flex-start;
+    }
+
+    button:hover {
+      background: #79b8ff;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .results {
+      margin-top: 2rem;
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .results-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .copy-btn {
+      font-size: 0.8rem;
+      padding: 0.4rem 0.75rem;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .copy-btn:hover {
+      background: var(--surface-hover);
+      border-color: #3d4d66;
+    }
+
+    .cds-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.7;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+      overflow-x: auto;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .cds-display .header-line {
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .cds-display .sequence {
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+
+    .status {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .status.loading {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .status.error {
+      background: rgba(248, 81, 73, 0.15);
+      color: var(--error);
+      border: 1px solid var(--error);
+    }
+
+    .status.success {
+      background: rgba(63, 185, 80, 0.15);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Gene CDS Fetcher</h1>
+    <p class="subtitle">Search NCBI for an organism and gene, then retrieve the canonical CDS (coding sequence).</p>
+
+    <form class="form" id="searchForm">
+      <div class="field">
+        <label for="organism">Organism</label>
+        <select id="organism" required>
+          <option value="Saccharomyces cerevisiae">Baker's yeast (Saccharomyces cerevisiae)</option>
+          <option value="Eptesicus fuscus">Big brown bat (Eptesicus fuscus)</option>
+          <option value="Pteropus alecto">Black flying fox (Pteropus alecto)</option>
+          <option value="Balaena mysticetus">Bowhead Whale (Balaena mysticetus)</option>
+          <option value="Deinococcus radiodurans">Deinococcus radiodurans</option>
+          <option value="Drosophila melanogaster">Fruit fly (Drosophila melanogaster)</option>
+          <option value="Spalax galili">Galilee blind mole rat (Spalax galili)</option>
+          <option value="Somniosus microcephalus">Greenland Shark (Somniosus microcephalus)</option>
+          <option value="Cavia porcellus">Guinea pig (Cavia porcellus)</option>
+          <option value="Homo sapiens">Human (Homo sapiens)</option>
+          <option value="Hypsibius dujardini">Hypsibius dujardini</option>
+          <option value="Myotis lucifugus">Little brown bat (Myotis lucifugus)</option>
+          <option value="Mus musculus">Mouse (Mus musculus)</option>
+          <option value="Myotis davidii">Myotis davidii</option>
+          <option value="Heterocephalus glaber">Naked Mole Rat (Heterocephalus glaber)</option>
+          <option value="Rattus norvegicus">Rat (Rattus norvegicus)</option>
+          <option value="Mus musculus">Snell Dwarf Mouse (Mus musculus)</option>
+          <option value="Trichoplax adhaerens">Trichoplax adhaerens</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="gene">Gene symbol</label>
+        <input type="text" id="gene" placeholder="e.g. Ercc1, TP53, BRCA1" required>
+      </div>
+
+      <button type="submit" id="searchBtn">Fetch CDS</button>
+    </form>
+
+    <div id="status"></div>
+    <div id="results" class="results" style="display: none;"></div>
+  </div>
+
+  <script>
+    const NCBI_BASE = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils';
+
+    async function fetchCDS(organism, geneSymbol) {
+      // 1. Search gene database for gene + organism
+      const searchUrl = `${NCBI_BASE}/esearch.fcgi?db=gene&term=${encodeURIComponent(geneSymbol + '[Gene] AND ' + organism + '[orgn]')}&retmode=json`;
+      const searchRes = await fetch(searchUrl);
+      const searchData = await searchRes.json();
+      const idList = searchData?.esearchresult?.idlist;
+
+      if (!idList || idList.length === 0) {
+        throw new Error(`No gene found for "${geneSymbol}" in ${organism}.`);
+      }
+
+      const geneId = idList[0];
+
+      // 2. Link from gene to RefSeq RNA (nuccore)
+      const linkUrl = `${NCBI_BASE}/elink.fcgi?dbfrom=gene&db=nuccore&id=${geneId}&linkname=gene_nuccore_refseqrna&retmode=json`;
+      const linkRes = await fetch(linkUrl);
+      const linkData = await linkRes.json();
+      const links = linkData?.linksets?.[0]?.linksetdbs?.[0]?.links;
+
+      if (!links || links.length === 0) {
+        throw new Error(`No RefSeq RNA found for gene "${geneSymbol}".`);
+      }
+
+      // 3. Fetch CDS from each linked nucleotide until we get one with CDS
+      // NCBI blocks CORS on text/FASTA - use local proxy (run server.py) or public CORS proxy
+      const proxyUrl = (url) => {
+        if (window.location.port === '8765' && window.location.hostname === 'localhost') {
+          return '/proxy?url=' + encodeURIComponent(url);
+        }
+        return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+      };
+      const delay = (ms) => new Promise(r => setTimeout(r, ms));
+      for (let i = 0; i < links.length; i++) {
+        if (i > 0) await delay(500); // NCBI rate limit: max 3 requests/sec without API key
+        const fetchUrl = `${NCBI_BASE}/efetch.fcgi?db=nuccore&id=${links[i]}&rettype=fasta_cds_na&retmode=text`;
+        const fetchRes = await fetch(proxyUrl(fetchUrl));
+        const text = await fetchRes.text();
+
+        if (text && text.trim().startsWith('>') && text.includes('\n')) {
+          return text.trim();
+        }
+      }
+
+      throw new Error(`No CDS (coding sequence) found for gene "${geneSymbol}". The gene may only have non-coding transcripts.`);
+    }
+
+    function showStatus(message, type) {
+      const el = document.getElementById('status');
+      el.innerHTML = `<div class="status ${type}">${message}</div>`;
+      el.style.display = 'block';
+    }
+
+    function hideStatus() {
+      document.getElementById('status').style.display = 'none';
+    }
+
+    function showResults(fasta, geneSymbol, organism) {
+      const lines = fasta.split('\n');
+      const headerLine = lines[0];
+      const sequence = lines.slice(1).join('\n').replace(/\s/g, '');
+
+      const displaySeq = sequence.match(/.{1,70}/g)?.join('\n') || sequence;
+
+      const resultsEl = document.getElementById('results');
+      resultsEl.innerHTML = `
+        <div class="results-header">
+          <span class="results-title">Canonical CDS</span>
+          <button type="button" class="copy-btn" id="copyBtn">Copy sequence</button>
+        </div>
+        <div class="cds-display">
+          <div class="header-line">${headerLine}</div>
+          <div class="sequence">${displaySeq}</div>
+        </div>
+        <p class="meta">${geneSymbol} in ${organism} · ${sequence.length} bp</p>
+      `;
+      resultsEl.style.display = 'block';
+
+      document.getElementById('copyBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(sequence);
+        const btn = document.getElementById('copyBtn');
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 1500);
+      });
+    }
+
+    document.getElementById('searchForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const organism = document.getElementById('organism').value;
+      const gene = document.getElementById('gene').value.trim();
+      const btn = document.getElementById('searchBtn');
+
+      if (!gene) return;
+
+      btn.disabled = true;
+      showStatus('Searching NCBI...', 'loading');
+
+      try {
+        const fasta = await fetchCDS(organism, gene);
+        hideStatus();
+        showResults(fasta, gene, organism);
+      } catch (err) {
+        showStatus(err.message, 'error');
+        document.getElementById('results').style.display = 'none';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
