@@ -4,10 +4,12 @@ A simple web tool to search NCBI for an organism and gene, then retrieve and dis
 
 ## Features
 
-- **Organism dropdown** – Select from common model organisms (Mouse, Human, Rat, Fruit fly, Yeast). You can add more options by editing the `<select>` in `index.html`.
+- **Organism dropdown** – Select from common organisms; each option includes an NCBI **taxid** (`data-taxid`) used to limit BLAST searches.
 - **Gene search** – Type a gene symbol (e.g. Ercc1, TP53, BRCA1).
-- **NCBI integration** – Uses NCBI E-utilities (esearch, elink, efetch) to find the gene and its RefSeq RNA, then fetches the CDS.
-- **Copy to clipboard** – One-click copy of the sequence.
+- **Transcript picker** – Lists linked RefSeq RNAs (`NM_`) from NCBI Gene; you choose which transcript before CDS fetch.
+- **NCBI integration** – Uses E-utilities (esearch, elink, esummary, efetch) to resolve the gene, summarize transcripts, and download `fasta_cds_na`.
+- **Checks panel** (localhost server only) – After each fetch: **ORF** sanity (length, ATG, stops), **blastn** vs RefSeq RNA (same species), **blastx** vs RefSeq protein (same species), and **blastx** vs **human** RefSeq protein (always). Results are **metrics + notes** (no automated pass/fail verdict).
+- **Copy to clipboard** – One-click copy of the raw CDS sequence.
 
 ## Usage
 
@@ -38,6 +40,6 @@ The `value` must be the organism’s scientific name as used by NCBI (e.g. `Mus 
 
 ## Technical notes
 
-- NCBI limits requests to about 3 per second without an API key; the app adds delays between CDS fetches.
-- The first RefSeq RNA with a CDS is used; for genes with multiple transcripts, this may not be the primary isoform.
-- NCBI blocks CORS on text/FASTA responses, so a proxy is used for CDS fetching.
+- NCBI limits requests to about 3 per second without an API key; the app adds short delays between E-utilities calls.
+- BLAST runs on NCBI’s servers via `POST /api/blast` (implemented in `server.py`); each search can take **tens of seconds to a few minutes**. Opening the app from `file://` disables BLAST (ORF checks still run in the browser).
+- NCBI blocks CORS on text/FASTA responses, so the local server proxies **E-utilities** URLs. BLAST is not proxied as arbitrary URLs; only the server’s `/api/blast` endpoint talks to `blast.ncbi.nlm.nih.gov`.

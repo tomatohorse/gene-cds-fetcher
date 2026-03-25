@@ -36,8 +36,126 @@
     }
 
     .container {
-      max-width: 720px;
+      max-width: 1400px;
       margin: 0 auto;
+    }
+
+    .page-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 1.5rem;
+      align-items: start;
+      margin-top: 1.25rem;
+    }
+
+    @media (max-width: 900px) {
+      .page-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .col-side {
+      position: sticky;
+      top: 1rem;
+      align-self: start;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .side-sound-option {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding: 0 0.15rem;
+    }
+
+    .side-sound-option label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .side-sound-option input[type="checkbox"] {
+      width: 1rem;
+      height: 1rem;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    @media (max-width: 900px) {
+      .col-side {
+        position: static;
+      }
+    }
+
+    .side-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: min(88vh, 920px);
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .tabs .tab {
+      flex: 1;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.65rem 0.75rem;
+      margin: 0;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.15s, background 0.15s;
+      align-self: stretch;
+    }
+
+    .tabs .tab:hover {
+      color: var(--text);
+      background: var(--surface-hover);
+    }
+
+    .tabs .tab.active {
+      color: var(--accent);
+      box-shadow: inset 0 -2px 0 var(--accent);
+      background: transparent;
+    }
+
+    .tab-panel {
+      display: none;
+      flex: 1;
+      min-height: 0;
+      flex-direction: column;
+      padding: 0.85rem 1rem 1rem;
+      overflow: hidden;
+    }
+
+    .tab-panel.active {
+      display: flex;
+    }
+
+    .tab-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .tab-hint[hidden] {
+      display: none;
     }
 
     h1 {
@@ -93,6 +211,13 @@
       box-shadow: 0 0 0 3px var(--accent-dim);
     }
 
+    #gene {
+      background-color: var(--surface);
+      color: var(--text);
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
     select {
       cursor: pointer;
       appearance: none;
@@ -131,16 +256,41 @@
     }
 
     .results {
-      margin-top: 2rem;
+      margin-top: 1.5rem;
+    }
+
+    .results:empty {
+      display: none;
     }
 
     .results-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       margin-bottom: 0.75rem;
       flex-wrap: wrap;
       gap: 0.5rem;
+    }
+
+    .results-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .checks-running-hint {
+      margin: 0;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+      text-align: center;
+      width: 100%;
+      max-width: 16rem;
+    }
+
+    .checks-running-hint[hidden] {
+      display: none;
     }
 
     .results-title {
@@ -173,7 +323,7 @@
       white-space: pre-wrap;
       word-break: break-all;
       overflow-x: auto;
-      max-height: 400px;
+      max-height: min(55vh, 520px);
       overflow-y: auto;
     }
 
@@ -192,6 +342,27 @@
       border-radius: 8px;
       font-size: 0.9rem;
       margin-bottom: 1rem;
+    }
+
+    .status .status-inner {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .status .status-message {
+      flex: 1;
+      min-width: 12rem;
+    }
+
+    .status .status-timer {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-variant-numeric: tabular-nums;
+      opacity: 0.95;
+      white-space: nowrap;
     }
 
     .status.loading {
@@ -217,35 +388,225 @@
       color: var(--text-muted);
       margin-top: 0.5rem;
     }
+
+    .field.hidden {
+      display: none;
+    }
+
+    .transcript-combo {
+      position: relative;
+      width: 100%;
+    }
+
+    .transcript-combo-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 400;
+      padding: 0.65rem 0.9rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    .transcript-combo-btn:hover {
+      background: var(--surface);
+      border-color: #3d4d66;
+      transform: none;
+    }
+
+    .transcript-combo-btn:active {
+      background: var(--surface);
+      transform: none;
+    }
+
+    .transcript-combo-btn:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+
+    .transcript-combo-btn .transcript-combo-value {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .transcript-combo-btn .transcript-combo-chev {
+      flex-shrink: 0;
+      color: var(--text-muted);
+      font-size: 0.65rem;
+      line-height: 1;
+    }
+
+    .transcript-list-panel {
+      position: fixed;
+      z-index: 300;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 14px 48px rgba(0, 0, 0, 0.55);
+      max-height: min(70vh, 520px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .transcript-list-panel[hidden] {
+      display: none !important;
+    }
+
+    .transcript-list {
+      list-style: none;
+      margin: 0;
+      padding: 0.35rem 0;
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .transcript-list li {
+      padding: 0.5rem 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      color: var(--text);
+      white-space: normal;
+      word-break: break-word;
+      cursor: pointer;
+    }
+
+    .transcript-list li:hover,
+    .transcript-list li:focus {
+      background: transparent;
+      box-shadow: inset 0 0 0 1px #3d4d66;
+      outline: none;
+    }
+
+    .transcript-list li[aria-selected="true"] {
+      background: transparent;
+      color: var(--accent);
+      box-shadow: inset 0 0 0 1px var(--accent);
+    }
+
+    #tabPanelChecks .check-scroll {
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .check-block {
+      border-top: 1px solid var(--border);
+      padding-top: 0.85rem;
+      margin-top: 0.85rem;
+      padding-left: 0.75rem;
+      border-left: 3px solid transparent;
+      margin-left: 0;
+      transition: border-left-color 0.15s;
+    }
+
+    .check-block.check-active {
+      border-left-color: var(--accent);
+    }
+
+    .check-block:first-of-type {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .check-block h3 {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .check-block .metrics {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .check-block .note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    .check-block.pending .metrics {
+      color: var(--accent);
+    }
+
+    .check-block.err .metrics {
+      color: var(--error);
+    }
+
+    #tabPanelProgress .progress-log {
+      flex: 1;
+      min-height: 8rem;
+      margin: 0;
+      margin-top: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text-muted);
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Gene CDS Fetcher</h1>
-    <p class="subtitle">Search NCBI for an organism and gene, then retrieve the canonical CDS (coding sequence).</p>
+    <p class="subtitle">Search NCBI for an organism and gene, pick a RefSeq transcript, then retrieve the CDS. Run <code style="font-size:0.85em">python3 server.py</code> for local proxy + BLAST. Layout: CDS on the left; Progress and Checks on the right.</p>
 
+    <div id="status"></div>
+
+    <div class="page-grid">
+      <div class="col-main">
     <form class="form" id="searchForm">
       <div class="field">
         <label for="organism">Organism</label>
         <select id="organism" required>
-          <option value="Saccharomyces cerevisiae">Baker's yeast (Saccharomyces cerevisiae)</option>
-          <option value="Eptesicus fuscus">Big brown bat (Eptesicus fuscus)</option>
-          <option value="Pteropus alecto">Black flying fox (Pteropus alecto)</option>
-          <option value="Balaena mysticetus">Bowhead Whale (Balaena mysticetus)</option>
-          <option value="Deinococcus radiodurans">Deinococcus radiodurans</option>
-          <option value="Drosophila melanogaster">Fruit fly (Drosophila melanogaster)</option>
-          <option value="Spalax galili">Galilee blind mole rat (Spalax galili)</option>
-          <option value="Somniosus microcephalus">Greenland Shark (Somniosus microcephalus)</option>
-          <option value="Cavia porcellus">Guinea pig (Cavia porcellus)</option>
-          <option value="Homo sapiens">Human (Homo sapiens)</option>
-          <option value="Hypsibius dujardini">Hypsibius dujardini</option>
-          <option value="Myotis lucifugus">Little brown bat (Myotis lucifugus)</option>
-          <option value="Mus musculus">Mouse (Mus musculus)</option>
-          <option value="Myotis davidii">Myotis davidii</option>
-          <option value="Heterocephalus glaber">Naked Mole Rat (Heterocephalus glaber)</option>
-          <option value="Rattus norvegicus">Rat (Rattus norvegicus)</option>
-          <option value="Mus musculus">Snell Dwarf Mouse (Mus musculus)</option>
-          <option value="Trichoplax adhaerens">Trichoplax adhaerens</option>
+          <option value="Saccharomyces cerevisiae" data-taxid="4932">Baker's yeast (Saccharomyces cerevisiae)</option>
+          <option value="Eptesicus fuscus" data-taxid="93845">Big brown bat (Eptesicus fuscus)</option>
+          <option value="Pteropus alecto" data-taxid="9402">Black flying fox (Pteropus alecto)</option>
+          <option value="Balaena mysticetus" data-taxid="27610">Bowhead Whale (Balaena mysticetus)</option>
+          <option value="Deinococcus radiodurans" data-taxid="1299">Deinococcus radiodurans</option>
+          <option value="Drosophila melanogaster" data-taxid="7227">Fruit fly (Drosophila melanogaster)</option>
+          <option value="Spalax galili" data-taxid="102684">Galilee blind mole rat (Spalax galili)</option>
+          <option value="Somniosus microcephalus" data-taxid="297702">Greenland Shark (Somniosus microcephalus)</option>
+          <option value="Cavia porcellus" data-taxid="10141">Guinea pig (Cavia porcellus)</option>
+          <option value="Homo sapiens" data-taxid="9606">Human (Homo sapiens)</option>
+          <option value="Hypsibius dujardini" data-taxid="400727">Hypsibius dujardini</option>
+          <option value="Myotis lucifugus" data-taxid="59463">Little brown bat (Myotis lucifugus)</option>
+          <option value="Mus musculus" data-taxid="10090">Mouse (Mus musculus)</option>
+          <option value="Myotis davidii" data-taxid="225400">Myotis davidii</option>
+          <option value="Heterocephalus glaber" data-taxid="10181">Naked Mole Rat (Heterocephalus glaber)</option>
+          <option value="Rattus norvegicus" data-taxid="10116">Rat (Rattus norvegicus)</option>
+          <option value="Mus musculus" data-taxid="10090">Snell Dwarf Mouse (Mus musculus)</option>
+          <option value="Trichoplax adhaerens" data-taxid="10228">Trichoplax adhaerens</option>
         </select>
       </div>
 
@@ -254,93 +615,831 @@
         <input type="text" id="gene" placeholder="e.g. Ercc1, TP53, BRCA1" required>
       </div>
 
+      <div class="field hidden" id="transcriptField">
+        <label for="transcriptComboBtn">RefSeq transcript (NM_)</label>
+        <div class="transcript-combo" id="transcriptComboRoot">
+          <button type="button" class="transcript-combo-btn" id="transcriptComboBtn" aria-expanded="false" aria-haspopup="listbox" aria-controls="transcriptList">
+            <span class="transcript-combo-value" id="transcriptComboValue">—</span>
+            <span class="transcript-combo-chev" aria-hidden="true">▼</span>
+          </button>
+          <div class="transcript-list-panel" id="transcriptListPanel" hidden>
+            <ul class="transcript-list" id="transcriptList" role="listbox" aria-labelledby="transcriptComboBtn"></ul>
+          </div>
+        </div>
+      </div>
+
       <button type="submit" id="searchBtn">Fetch CDS</button>
     </form>
 
-    <div id="status"></div>
-    <div id="results" class="results" style="display: none;"></div>
+        <div id="results" class="results"></div>
+      </div>
+
+      <aside class="col-side" aria-label="Progress and validation">
+        <div class="side-card">
+          <div class="tabs" role="tablist">
+            <button type="button" class="tab active" id="tabBtnProgress" role="tab" aria-selected="true" aria-controls="tabPanelProgress">Progress</button>
+            <button type="button" class="tab" id="tabBtnChecks" role="tab" aria-selected="false" aria-controls="tabPanelChecks">Checks</button>
+          </div>
+          <div id="tabPanelProgress" class="tab-panel active" role="tabpanel" aria-labelledby="tabBtnProgress">
+            <p id="progressEmptyHint" class="tab-hint">Timestamps and NCBI steps appear here after you click Fetch CDS.</p>
+            <pre id="progressLog" class="progress-log" hidden></pre>
+          </div>
+          <div id="tabPanelChecks" class="tab-panel" role="tabpanel" aria-labelledby="tabBtnChecks">
+            <div class="check-scroll" id="validationBlocks"></div>
+          </div>
+        </div>
+        <div class="side-sound-option">
+          <label>
+            <input type="checkbox" id="soundOnChecksDone" />
+            Play Sound on Checks Finished?
+          </label>
+        </div>
+      </aside>
+    </div>
   </div>
 
   <script>
     const NCBI_BASE = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils';
+    const HUMAN_TAXID = 9606;
+    const STOPS = new Set(['TAA', 'TAG', 'TGA']);
 
-    async function fetchCDS(organism, geneSymbol) {
-      // 1. Search gene database for gene + organism
-      const searchUrl = `${NCBI_BASE}/esearch.fcgi?db=gene&term=${encodeURIComponent(geneSymbol + '[Gene] AND ' + organism + '[orgn]')}&retmode=json`;
-      const searchRes = await fetch(searchUrl);
-      const searchData = await searchRes.json();
-      const idList = searchData?.esearchresult?.idlist;
+    let lastContext = null;
+    let statusStepTimer = null;
+    let statusStepStartedAt = 0;
+    let transcriptPanelOpen = false;
+    let transcriptSelectionToken = 0;
+    let checksDoneAudioCtx = null;
 
-      if (!idList || idList.length === 0) {
-        throw new Error(`No gene found for "${geneSymbol}" in ${organism}.`);
-      }
-
-      const geneId = idList[0];
-
-      // 2. Link from gene to RefSeq RNA (nuccore)
-      const linkUrl = `${NCBI_BASE}/elink.fcgi?dbfrom=gene&db=nuccore&id=${geneId}&linkname=gene_nuccore_refseqrna&retmode=json`;
-      const linkRes = await fetch(linkUrl);
-      const linkData = await linkRes.json();
-      const links = linkData?.linksets?.[0]?.linksetdbs?.[0]?.links;
-
-      if (!links || links.length === 0) {
-        throw new Error(`No RefSeq RNA found for gene "${geneSymbol}".`);
-      }
-
-      // 3. Fetch CDS from each linked nucleotide until we get one with CDS
-      // NCBI blocks CORS on text/FASTA - use local proxy (run server.py) or public CORS proxy
-      const proxyUrl = (url) => {
-        if (window.location.port === '8765' && window.location.hostname === 'localhost') {
-          return '/proxy?url=' + encodeURIComponent(url);
+    function resumeChecksDoneAudioIfNeeded() {
+      const el = document.getElementById('soundOnChecksDone');
+      if (!el || !el.checked) return;
+      try {
+        if (!checksDoneAudioCtx) {
+          checksDoneAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
-        return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+        if (checksDoneAudioCtx.state === 'suspended') checksDoneAudioCtx.resume();
+      } catch (e) { /* ignore */ }
+    }
+
+    function playChecksDoneChime() {
+      const el = document.getElementById('soundOnChecksDone');
+      if (!el || !el.checked) return;
+      try {
+        if (!checksDoneAudioCtx) {
+          checksDoneAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const ctx = checksDoneAudioCtx;
+        if (ctx.state === 'suspended') ctx.resume();
+        const t0 = ctx.currentTime;
+        const master = ctx.createGain();
+        master.gain.value = 0.07;
+        master.connect(ctx.destination);
+        const freqs = [523.25, 659.25];
+        freqs.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          const start = t0 + i * 0.07;
+          g.gain.setValueAtTime(0.001, start);
+          g.gain.exponentialRampToValueAtTime(0.5, start + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.001, start + 0.28);
+          osc.connect(g);
+          g.connect(master);
+          osc.start(start);
+          osc.stop(start + 0.32);
+        });
+      } catch (e) { /* ignore */ }
+    }
+
+    function formatStepElapsed(ms) {
+      const s = Math.floor(ms / 1000);
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      if (m > 0) return `${m}m ${String(r).padStart(2, '0')}s`;
+      return `${r}s`;
+    }
+
+    function setActiveCheck(blockId) {
+      const root = document.getElementById('validationBlocks');
+      if (!root) return;
+      root.querySelectorAll('.check-block.check-active').forEach((n) => n.classList.remove('check-active'));
+      if (!blockId) return;
+      const el = document.getElementById(blockId);
+      if (el && el.classList.contains('check-block')) el.classList.add('check-active');
+    }
+
+    function setChecksRunningHint(on) {
+      const el = document.getElementById('checksRunningHint');
+      if (!el) return;
+      el.hidden = !on;
+    }
+
+    function closeTranscriptPanel() {
+      const panel = document.getElementById('transcriptListPanel');
+      const btn = document.getElementById('transcriptComboBtn');
+      if (!panel || !btn) return;
+      panel.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+      transcriptPanelOpen = false;
+    }
+
+    function positionTranscriptPanel() {
+      const panel = document.getElementById('transcriptListPanel');
+      const btn = document.getElementById('transcriptComboBtn');
+      const ul = document.getElementById('transcriptList');
+      if (!panel || !btn || panel.hidden) return;
+      const margin = 12;
+      const vw = window.innerWidth;
+      const maxW = vw - margin * 2;
+      panel.style.visibility = 'hidden';
+      panel.style.left = '-9999px';
+      panel.style.top = '0';
+      panel.style.width = `${maxW}px`;
+      panel.style.maxWidth = `${maxW}px`;
+      let innerNeed = 200;
+      if (ul) {
+        const prevWs = ul.style.whiteSpace;
+        ul.style.whiteSpace = 'nowrap';
+        innerNeed = ul.scrollWidth + 28;
+        ul.style.whiteSpace = prevWs;
+      }
+      const rect = btn.getBoundingClientRect();
+      const minW = rect.width;
+      const w = Math.max(minW, Math.min(innerNeed, maxW));
+      let left = rect.left;
+      if (left + w > vw - margin) left = vw - margin - w;
+      if (left < margin) left = margin;
+      panel.style.width = `${w}px`;
+      panel.style.maxWidth = `${maxW}px`;
+      panel.style.left = `${left}px`;
+      panel.style.top = `${rect.bottom + 6}px`;
+      panel.style.visibility = 'visible';
+    }
+
+    function openTranscriptPanel() {
+      const panel = document.getElementById('transcriptListPanel');
+      const btn = document.getElementById('transcriptComboBtn');
+      if (!panel || !btn) return;
+      panel.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+      transcriptPanelOpen = true;
+      positionTranscriptPanel();
+      const selected = document.querySelector('#transcriptList li[aria-selected="true"]');
+      (selected || document.querySelector('#transcriptList li'))?.focus();
+    }
+
+    function toggleTranscriptPanel() {
+      if (transcriptPanelOpen) closeTranscriptPanel();
+      else openTranscriptPanel();
+    }
+
+    function updateTranscriptComboButtonLabel() {
+      const selected = document.querySelector('#transcriptList li[aria-selected="true"]');
+      const span = document.getElementById('transcriptComboValue');
+      if (!span) return;
+      span.textContent = selected ? selected.textContent.trim() : '—';
+    }
+
+    function getTranscriptSelection() {
+      const selected = document.querySelector('#transcriptList li[aria-selected="true"]');
+      if (!selected) return null;
+      return {
+        value: selected.dataset.id || '',
+        accession: selected.dataset.accession || '',
       };
-      const delay = (ms) => new Promise(r => setTimeout(r, ms));
-      for (let i = 0; i < links.length; i++) {
-        if (i > 0) await delay(500); // NCBI rate limit: max 3 requests/sec without API key
-        const fetchUrl = `${NCBI_BASE}/efetch.fcgi?db=nuccore&id=${links[i]}&rettype=fasta_cds_na&retmode=text`;
-        const fetchRes = await fetch(proxyUrl(fetchUrl));
-        const text = await fetchRes.text();
+    }
 
-        if (text && text.trim().startsWith('>') && text.includes('\n')) {
-          return text.trim();
+    function fillTranscriptPicker(transcripts) {
+      const ul = document.getElementById('transcriptList');
+      if (!ul) return;
+      ul.innerHTML = '';
+      transcripts.forEach((t, i) => {
+        const li = document.createElement('li');
+        li.setAttribute('role', 'option');
+        li.dataset.id = t.id;
+        li.dataset.accession = t.accession;
+        li.textContent = `${t.accession} — ${t.title}`;
+        li.tabIndex = -1;
+        if (i === 0) {
+          li.setAttribute('aria-selected', 'true');
+          li.tabIndex = 0;
+        } else {
+          li.setAttribute('aria-selected', 'false');
         }
-      }
+        li.addEventListener('click', () => selectTranscriptLi(li, true));
+        li.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            selectTranscriptLi(li, true);
+          }
+        });
+        ul.appendChild(li);
+      });
+      updateTranscriptComboButtonLabel();
+      closeTranscriptPanel();
+      document.getElementById('transcriptField').classList.remove('hidden');
+    }
 
-      throw new Error(`No CDS (coding sequence) found for gene "${geneSymbol}". The gene may only have non-coding transcripts.`);
+    async function selectTranscriptLi(li, runRefetch) {
+      document.querySelectorAll('#transcriptList li').forEach((n) => {
+        n.setAttribute('aria-selected', 'false');
+        n.tabIndex = -1;
+      });
+      li.setAttribute('aria-selected', 'true');
+      li.tabIndex = 0;
+      updateTranscriptComboButtonLabel();
+      closeTranscriptPanel();
+      if (!runRefetch || !lastContext) return;
+      const myToken = ++transcriptSelectionToken;
+      const btn = document.getElementById('searchBtn');
+      btn.disabled = true;
+      try {
+        progressLog('Different transcript selected — refetching CDS and re-running checks…');
+        await loadCdsAndValidate();
+      } catch (e) {
+        if (myToken !== transcriptSelectionToken) return;
+        progressLog(`Error: ${e.message || e}`);
+        showStatus(e.message || String(e), 'error');
+      } finally {
+        if (myToken === transcriptSelectionToken) btn.disabled = false;
+      }
+    }
+
+    function useLocalServer() {
+      const h = window.location.hostname;
+      const localHost = h === 'localhost' || h === '127.0.0.1' || h === '[::1]';
+      return window.location.port === '8765' && localHost;
+    }
+
+    function progressLogClear() {
+      const el = document.getElementById('progressLog');
+      el.textContent = '';
+      el.hidden = true;
+      const hint = document.getElementById('progressEmptyHint');
+      if (hint) hint.hidden = false;
+    }
+
+    function progressLog(line) {
+      const hint = document.getElementById('progressEmptyHint');
+      if (hint) hint.hidden = true;
+      const el = document.getElementById('progressLog');
+      el.hidden = false;
+      const t = new Date().toLocaleTimeString(undefined, { hour12: false });
+      el.textContent += `[${t}] ${line}\n`;
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function setSideTab(which) {
+      const showChecks = which === 'checks';
+      const prog = document.getElementById('tabPanelProgress');
+      const chk = document.getElementById('tabPanelChecks');
+      const bProg = document.getElementById('tabBtnProgress');
+      const bChk = document.getElementById('tabBtnChecks');
+      if (!prog || !chk || !bProg || !bChk) return;
+      prog.classList.toggle('active', !showChecks);
+      chk.classList.toggle('active', showChecks);
+      bProg.classList.toggle('active', !showChecks);
+      bChk.classList.toggle('active', showChecks);
+      bProg.setAttribute('aria-selected', String(!showChecks));
+      bChk.setAttribute('aria-selected', String(showChecks));
     }
 
     function showStatus(message, type) {
       const el = document.getElementById('status');
-      el.innerHTML = `<div class="status ${type}">${message}</div>`;
+      if (!el) return;
+      if (statusStepTimer) {
+        clearInterval(statusStepTimer);
+        statusStepTimer = null;
+      }
+      if (type === 'error' || type === 'success') setActiveCheck(null);
+
+      const wrap = document.createElement('div');
+      wrap.className = `status ${type}`;
+
+      if (type === 'loading') {
+        statusStepStartedAt = Date.now();
+        const row = document.createElement('div');
+        row.className = 'status-inner';
+        const msg = document.createElement('span');
+        msg.className = 'status-message';
+        msg.textContent = message;
+        const timer = document.createElement('span');
+        timer.className = 'status-timer';
+        timer.setAttribute('aria-label', 'Elapsed time on this step');
+        timer.textContent = '0s';
+        row.appendChild(msg);
+        row.appendChild(timer);
+        wrap.appendChild(row);
+        statusStepTimer = setInterval(() => {
+          timer.textContent = formatStepElapsed(Date.now() - statusStepStartedAt);
+        }, 500);
+      } else {
+        wrap.textContent = message;
+      }
+
+      el.replaceChildren(wrap);
       el.style.display = 'block';
     }
 
     function hideStatus() {
-      document.getElementById('status').style.display = 'none';
+      const el = document.getElementById('status');
+      if (!el) return;
+      if (statusStepTimer) {
+        clearInterval(statusStepTimer);
+        statusStepTimer = null;
+      }
+      setActiveCheck(null);
+      el.style.display = 'none';
+      el.replaceChildren();
     }
 
-    function showResults(fasta, geneSymbol, organism) {
+    document.getElementById('tabBtnProgress').addEventListener('click', () => setSideTab('progress'));
+    document.getElementById('tabBtnChecks').addEventListener('click', () => setSideTab('checks'));
+
+    /** NCBI E-utilities: use local /proxy on localhost (same as efetch) + wall-clock timeout. */
+    async function ncbiFetch(url, timeoutMs = 120000) {
+      const target = useLocalServer()
+        ? '/proxy?url=' + encodeURIComponent(url)
+        : url;
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), timeoutMs);
+      try {
+        const res = await fetch(target, { signal: ctrl.signal });
+        return res;
+      } catch (e) {
+        if (e.name === 'AbortError') {
+          throw new Error(`NCBI request timed out after ${timeoutMs / 1000}s: ${url.slice(0, 80)}…`);
+        }
+        throw e;
+      } finally {
+        clearTimeout(t);
+      }
+    }
+
+    const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    /**
+     * NCBI eutils JSON occasionally includes raw control characters (e.g. newlines) inside
+     * string values, which makes JSON.parse throw. Escape those only inside quoted strings.
+     */
+    function escapeControlCharsInJsonStringValues(s) {
+      let out = '';
+      let i = 0;
+      let inString = false;
+      while (i < s.length) {
+        const c = s[i];
+        if (!inString) {
+          if (c === '"') {
+            inString = true;
+            out += c;
+            i++;
+            continue;
+          }
+          out += c;
+          i++;
+          continue;
+        }
+        if (c === '\\') {
+          out += c;
+          if (i + 1 < s.length) {
+            out += s[i + 1];
+            i += 2;
+          } else {
+            i++;
+          }
+          continue;
+        }
+        if (c === '"') {
+          inString = false;
+          out += c;
+          i++;
+          continue;
+        }
+        const code = c.charCodeAt(0);
+        if (code <= 31) {
+          if (code === 9) out += '\\t';
+          else if (code === 10) out += '\\n';
+          else if (code === 13) out += '\\r';
+          else out += '\\u' + ('0000' + code.toString(16)).toUpperCase().slice(-4);
+        } else {
+          out += c;
+        }
+        i++;
+      }
+      return out;
+    }
+
+    async function ncbiReadJson(res) {
+      const raw = await res.text();
+      const trimmed = raw.trim().replace(/^\uFEFF/, '');
+      try {
+        return JSON.parse(trimmed);
+      } catch (firstErr) {
+        try {
+          return JSON.parse(escapeControlCharsInJsonStringValues(trimmed));
+        } catch {
+          throw new Error(
+            `NCBI returned JSON that could not be parsed (${firstErr.message}). Preview: ${trimmed.slice(0, 180).replace(/\s+/g, ' ')}…`
+          );
+        }
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function fmtE(v) {
+      if (v === undefined || v === null) return '—';
+      if (typeof v !== 'number') return String(v);
+      if (v === 0) return '0';
+      return v < 1e-3 ? v.toExponential(2) : String(v);
+    }
+
+    function accBase(a) {
+      return String(a || '').split('.')[0] || '';
+    }
+
+    function selectedTaxid() {
+      const opt = document.getElementById('organism').selectedOptions[0];
+      const t = opt && opt.getAttribute('data-taxid');
+      return t ? parseInt(t, 10) : null;
+    }
+
+    async function esearchGene(organism, geneSymbol) {
+      progressLog('NCBI esearch (gene): looking up symbol + organism…');
+      const searchUrl = `${NCBI_BASE}/esearch.fcgi?db=gene&term=${encodeURIComponent(geneSymbol + '[Gene] AND ' + organism + '[orgn]')}&retmode=json`;
+      const searchRes = await ncbiFetch(searchUrl);
+      if (!searchRes.ok) throw new Error(`esearch failed: HTTP ${searchRes.status}`);
+      const searchData = await ncbiReadJson(searchRes);
+      const esr = searchData?.esearchresult;
+      if (esr?.ERROR) throw new Error(`NCBI esearch: ${esr.ERROR}`);
+      const idList = esr?.idlist;
+      if (!idList || idList.length === 0) {
+        throw new Error(`No gene found for "${geneSymbol}" in ${organism}.`);
+      }
+      progressLog(`esearch OK — gene id ${idList[0]}`);
+      return idList[0];
+    }
+
+    async function elinkRefseqRna(geneId) {
+      progressLog('NCBI elink: gene → RefSeq RNA (nuccore)…');
+      const linkUrl = `${NCBI_BASE}/elink.fcgi?dbfrom=gene&db=nuccore&id=${geneId}&linkname=gene_nuccore_refseqrna&retmode=json`;
+      const linkRes = await ncbiFetch(linkUrl);
+      if (!linkRes.ok) throw new Error(`elink failed: HTTP ${linkRes.status}`);
+      const linkData = await ncbiReadJson(linkRes);
+      const links = linkData?.linksets?.[0]?.linksetdbs?.[0]?.links;
+      if (!links || links.length === 0) {
+        throw new Error('No RefSeq RNA linked for this gene.');
+      }
+      progressLog(`elink OK — ${links.length} RefSeq RNA UID(s)`);
+      return links;
+    }
+
+    async function esummaryNuccore(ids) {
+      progressLog(`NCBI esummary (nuccore): fetching titles for ${ids.length} transcript(s)…`);
+      const chunkSize = 80;
+      const out = [];
+      for (let i = 0; i < ids.length; i += chunkSize) {
+        const chunk = ids.slice(i, i + chunkSize);
+        const url = `${NCBI_BASE}/esummary.fcgi?db=nuccore&id=${chunk.join(',')}&retmode=json`;
+        const res = await ncbiFetch(url);
+        if (!res.ok) throw new Error(`esummary failed: HTTP ${res.status}`);
+        const data = await ncbiReadJson(res);
+        const result = data.result;
+        if (!result || !result.uids) continue;
+        for (const uid of result.uids) {
+          const o = result[uid];
+          if (!o) continue;
+          const acc = o.accessionversion || o.caption || uid;
+          const title = o.title || '';
+          out.push({ id: String(uid), accession: String(acc), title });
+        }
+        if (i + chunkSize < ids.length) await delay(350);
+      }
+      const order = new Map(ids.map((id, idx) => [String(id), idx]));
+      out.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+      progressLog(`esummary OK — ${out.length} transcript record(s) for picker`);
+      return out;
+    }
+
+    async function fetchFastaCdsNa(nuccoreId) {
+      const via = useLocalServer() ? 'local /proxy' : 'public CORS proxy (slow)';
+      progressLog(`NCBI efetch: fasta_cds_na for UID ${nuccoreId} (${via})…`);
+      const fetchUrl = `${NCBI_BASE}/efetch.fcgi?db=nuccore&id=${nuccoreId}&rettype=fasta_cds_na&retmode=text`;
+      const fetchRes = await ncbiFetch(fetchUrl, 180000);
+      if (!fetchRes.ok) throw new Error(`efetch CDS failed: HTTP ${fetchRes.status}`);
+      const text = await fetchRes.text();
+      if (text && text.trim().startsWith('>') && text.includes('\n')) {
+        progressLog('efetch OK — FASTA CDS received');
+        return text.trim();
+      }
+      throw new Error('No CDS (fasta_cds_na) for this transcript — try another NM_ in the list.');
+    }
+
+    function normalizeDNA(raw) {
+      const upper = raw.toUpperCase().replace(/\s/g, '').replace(/U/g, 'T');
+      const stripped = upper.replace(/[ACGT]/g, '').length;
+      const seq = upper.replace(/[^ACGT]/g, '');
+      return { seq, nonAgctRemoved: stripped };
+    }
+
+    function checkORF(seq) {
+      const notes = [];
+      const len = seq.length;
+      if (len === 0) {
+        notes.push('Empty sequence after removing non-AGCT characters.');
+        return { ok: false, lines: ['(no ORF checks possible)'], notes };
+      }
+      if (len % 3 !== 0) notes.push(`Length ${len} is not a multiple of 3 (codon structure).`);
+      const codons = [];
+      for (let i = 0; i + 3 <= len; i += 3) codons.push(seq.slice(i, i + 3));
+      if (codons.length === 0) {
+        notes.push('Sequence too short to form codons.');
+        return { ok: false, lines: [], notes };
+      }
+      if (codons[0] !== 'ATG') notes.push(`First codon is ${codons[0]}, not ATG (standard nuclear code).`);
+      const last = codons[codons.length - 1];
+      if (!STOPS.has(last)) notes.push(`Last codon is ${last}, not a stop (TAA/TAG/TGA).`);
+      let internalStops = 0;
+      for (let j = 1; j < codons.length - 1; j++) {
+        if (STOPS.has(codons[j])) internalStops++;
+      }
+      if (internalStops) notes.push(`Found ${internalStops} in-frame stop codon(s) before the final codon.`);
+      const lines = [
+        `Length (bp): ${len}`,
+        `Codons: ${codons.length}`,
+        `Start: ${codons[0]} | Stop: ${last}`,
+      ];
+      return { ok: notes.length === 0, lines, notes };
+    }
+
+    function formatHitLines(hits, max = 3) {
+      if (!hits || !hits.length) return ['(no hits)'];
+      return hits.slice(0, max).map((h, i) => {
+        const title = (h.title || '').slice(0, 70) + ((h.title || '').length > 70 ? '…' : '');
+        return `${i + 1}. ${h.accession || '—'} | ident ${h.pct_identity}% | qcov ${h.query_cover_pct}% | align ${h.align_len} | E ${fmtE(h.evalue)} | bit ${h.bit_score != null ? h.bit_score : '—'}\n   ${title}`;
+      });
+    }
+
+    async function postBlast(body) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 600000);
+      let res;
+      try {
+        res = await fetch('/api/blast', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          signal: ctrl.signal,
+        });
+      } catch (e) {
+        if (e.name === 'AbortError') throw new Error('BLAST request timed out after 10 minutes (server may still be busy).');
+        throw e;
+      } finally {
+        clearTimeout(t);
+      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `BLAST HTTP ${res.status}`);
+      return data;
+    }
+
+    function setBlock(id, { title, metrics, note, state }) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('pending', 'err');
+      if (state === 'pending') el.classList.add('pending');
+      if (state === 'err') el.classList.add('err');
+      el.querySelector('h3').textContent = title;
+      el.querySelector('.metrics').textContent = metrics;
+      const ne = el.querySelector('.note');
+      ne.textContent = note || '';
+    }
+
+    function buildValidationSkeleton() {
+      const ids = [
+        ['blkOrf', 'ORF structure'],
+        ['blkBlastn', 'blastn · RefSeq RNA · same species'],
+        ['blkBlastx', 'blastx · RefSeq protein · same species'],
+        ['blkBlastxHuman', 'blastx · RefSeq protein · human'],
+      ];
+      document.getElementById('validationBlocks').innerHTML = ids
+        .map(
+          ([id, t]) =>
+            `<div class="check-block pending" id="${id}"><h3>${escapeHtml(t)}</h3><div class="metrics">…</div><p class="note"></p></div>`
+        )
+        .join('');
+    }
+
+    async function runValidation(fasta, geneSymbol, organism, taxid, selectedAccession) {
+      setChecksRunningHint(true);
+      try {
+      progressLog('ORF: scanning reading frame (local)…');
+      buildValidationSkeleton();
+      setActiveCheck('blkOrf');
+      const lines = fasta.split('\n');
+      const sequence = lines.slice(1).join('\n').replace(/\s/g, '');
+      const { seq, nonAgctRemoved } = normalizeDNA(sequence);
+      const fastaQuery = `>query_cds_${geneSymbol}\n${sequence}`;
+
+      let orfNote = '';
+      if (nonAgctRemoved) orfNote = `${nonAgctRemoved} non-AGCT character(s) removed before ORF scan. `;
+      orfNote += 'Nuclear genetic code; mitochondrial genes may violate start/stop rules.';
+      const orf = checkORF(seq);
+      setBlock('blkOrf', {
+        title: 'ORF structure',
+        metrics: [...orf.lines, ...(orf.notes.length ? ['—', ...orf.notes.map((n) => '• ' + n)] : [])].join('\n') || '(no data)',
+        note: orfNote,
+        state: orf.ok ? undefined : 'err',
+      });
+
+      progressLog('ORF done.');
+      if (!useLocalServer()) {
+        progressLog('Skipping BLAST: open via http://127.0.0.1:8765 or http://localhost:8765 with server.py');
+        const msg =
+          'BLAST checks need this page at http://127.0.0.1:8765 or http://localhost:8765 with python3 server.py. ORF still ran.';
+        const titles = [
+          ['blkBlastn', 'blastn · RefSeq RNA · same species'],
+          ['blkBlastx', 'blastx · RefSeq protein · same species'],
+          ['blkBlastxHuman', 'blastx · RefSeq protein · human'],
+        ];
+        titles.forEach(([id, title]) => {
+          setBlock(id, { title, metrics: msg, note: '', state: 'err' });
+        });
+        setActiveCheck(null);
+        return;
+      }
+
+      const entrezSpecies = taxid != null ? `txid${taxid}[ORGN]` : null;
+      const entrezHuman = `txid${HUMAN_TAXID}[ORGN]`;
+
+      showStatus('BLAST 1/3: nucleotide vs RefSeq RNA (same species) — often 30s–3 min…', 'loading');
+      progressLog('BLAST blastn: submitting to NCBI…');
+      setBlock('blkBlastn', {
+        title: 'blastn · RefSeq RNA · same species',
+        metrics: 'Submitting to NCBI BLAST…',
+        note: 'Nucleotide CDS vs RefSeq transcripts for the selected species (consistency with NCBI for that taxon).',
+        state: 'pending',
+      });
+      setActiveCheck('blkBlastn');
+      try {
+        const bn = await postBlast({
+          program: 'blastn',
+          database: 'refseq_rna',
+          query: fastaQuery,
+          entrez_query: entrezSpecies,
+          hitlist_size: 10,
+        });
+        const linesH = formatHitLines(bn.hits);
+        let note =
+          'Top hits are RefSeq RNAs. Compare accessions to your chosen NM_. High identity + high query coverage usually mean the fetch matches that transcript class.';
+        if (bn.hits && bn.hits[0] && selectedAccession) {
+          const top = accBase(bn.hits[0].accession);
+          const sel = accBase(selectedAccession);
+          if (top && sel && top === sel) note += ' Top hit accession matches the selected transcript (base accession).';
+          else if (top && sel) note += ` Top hit (${top}) differs from selected (${sel}) — review isoforms/paralogs.`;
+        }
+        setBlock('blkBlastn', {
+          title: 'blastn · RefSeq RNA · same species',
+          metrics: linesH.join('\n'),
+          note,
+          state: bn.hits && bn.hits.length ? undefined : 'err',
+        });
+        progressLog('BLAST blastn finished.');
+      } catch (e) {
+        progressLog(`BLAST blastn error: ${e.message || e}`);
+        setBlock('blkBlastn', {
+          title: 'blastn · RefSeq RNA · same species',
+          metrics: String(e.message || e),
+          note: '',
+          state: 'err',
+        });
+      }
+      setActiveCheck(null);
+
+      showStatus('BLAST 2/3: translated CDS vs RefSeq protein (same species)…', 'loading');
+      progressLog('BLAST blastx (same species): submitting…');
+      setBlock('blkBlastx', {
+        title: 'blastx · RefSeq protein · same species',
+        metrics: 'Submitting…',
+        note: 'Translated CDS vs RefSeq proteins (same species). Useful when nucleotide diverges but protein should match.',
+        state: 'pending',
+      });
+      setActiveCheck('blkBlastx');
+      try {
+        const bx = await postBlast({
+          program: 'blastx',
+          database: 'refseq_protein',
+          query: fastaQuery,
+          entrez_query: entrezSpecies,
+          hitlist_size: 10,
+        });
+        setBlock('blkBlastx', {
+          title: 'blastx · RefSeq protein · same species',
+          metrics: formatHitLines(bx.hits).join('\n'),
+          note: 'For cross-species experiments, also read the human blastx block below in this tab.',
+          state: bx.hits && bx.hits.length ? undefined : 'err',
+        });
+        progressLog('BLAST blastx (same species) finished.');
+      } catch (e) {
+        progressLog(`BLAST blastx (species) error: ${e.message || e}`);
+        setBlock('blkBlastx', {
+          title: 'blastx · RefSeq protein · same species',
+          metrics: String(e.message || e),
+          note: '',
+          state: 'err',
+        });
+      }
+      setActiveCheck(null);
+
+      showStatus('BLAST 3/3: translated CDS vs human RefSeq protein…', 'loading');
+      progressLog('BLAST blastx (human): submitting…');
+      setBlock('blkBlastxHuman', {
+        title: 'blastx · RefSeq protein · human',
+        metrics: 'Submitting…',
+        note: 'Human RefSeq proteins — for non-human CDS you plan to express or compare in human cells.',
+        state: 'pending',
+      });
+      setActiveCheck('blkBlastxHuman');
+      try {
+        const bxh = await postBlast({
+          program: 'blastx',
+          database: 'refseq_protein',
+          query: fastaQuery,
+          entrez_query: entrezHuman,
+          hitlist_size: 10,
+        });
+        setBlock('blkBlastxHuman', {
+          title: 'blastx · RefSeq protein · human',
+          metrics: formatHitLines(bxh.hits).join('\n'),
+          note: 'Expect the ortholog / gene family to dominate top hits. Low coverage or distant hits warrant manual review.',
+          state: bxh.hits && bxh.hits.length ? undefined : 'err',
+        });
+        progressLog('BLAST blastx (human) finished. All checks done.');
+      } catch (e) {
+        progressLog(`BLAST blastx (human) error: ${e.message || e}`);
+        setBlock('blkBlastxHuman', {
+          title: 'blastx · RefSeq protein · human',
+          metrics: String(e.message || e),
+          note: '',
+          state: 'err',
+        });
+      }
+      setActiveCheck(null);
+      } finally {
+        setChecksRunningHint(false);
+      }
+    }
+
+    function showWorkspaceShell(geneSymbol, organism) {
+      document.getElementById('results').innerHTML = `
+        <div class="results-header">
+          <span class="results-title">CDS</span>
+          <div class="results-actions">
+            <button type="button" class="copy-btn" id="copyBtn" disabled>Copy sequence</button>
+            <p class="checks-running-hint" id="checksRunningHint" hidden>(still checking...)</p>
+          </div>
+        </div>
+        <p class="meta">${escapeHtml(geneSymbol)} in ${escapeHtml(organism)} — loading CDS…</p>
+        <div class="cds-display" style="opacity:0.65">
+          <div class="header-line">(loading)</div>
+          <div class="sequence">…</div>
+        </div>
+      `;
+      document.getElementById('validationBlocks').innerHTML = `
+        <div class="check-block pending" id="chkPlaceholder">
+          <h3>Checks</h3>
+          <div class="metrics">CDS is still downloading. Then ORF + BLAST will fill this tab.</div>
+          <p class="note">Use the Progress tab for live steps.</p>
+        </div>
+      `;
+    }
+
+    function showResults(fasta, geneSymbol, organism, selectedAccession) {
       const lines = fasta.split('\n');
       const headerLine = lines[0];
       const sequence = lines.slice(1).join('\n').replace(/\s/g, '');
-
       const displaySeq = sequence.match(/.{1,70}/g)?.join('\n') || sequence;
-
       const resultsEl = document.getElementById('results');
       resultsEl.innerHTML = `
         <div class="results-header">
-          <span class="results-title">Canonical CDS</span>
-          <button type="button" class="copy-btn" id="copyBtn">Copy sequence</button>
+          <span class="results-title">CDS (fasta_cds_na)</span>
+          <div class="results-actions">
+            <button type="button" class="copy-btn" id="copyBtn">Copy sequence</button>
+            <p class="checks-running-hint" id="checksRunningHint" hidden>(still checking...)</p>
+          </div>
         </div>
+        <p class="meta">${escapeHtml(geneSymbol)} in ${escapeHtml(organism)} · ${sequence.length} bp · ${escapeHtml(selectedAccession || '')}</p>
         <div class="cds-display">
-          <div class="header-line">${headerLine}</div>
-          <div class="sequence">${displaySeq}</div>
+          <div class="header-line">${escapeHtml(headerLine)}</div>
+          <div class="sequence">${escapeHtml(displaySeq)}</div>
         </div>
-        <p class="meta">${geneSymbol} in ${organism} · ${sequence.length} bp</p>
       `;
-      resultsEl.style.display = 'block';
-
       document.getElementById('copyBtn').addEventListener('click', () => {
         navigator.clipboard.writeText(sequence);
         const btn = document.getElementById('copyBtn');
@@ -350,28 +1449,105 @@
       });
     }
 
+    async function loadCdsAndValidate() {
+      if (!lastContext) return;
+      setSideTab('progress');
+      const { organism, geneSymbol, taxid } = lastContext;
+      const picked = getTranscriptSelection();
+      if (!picked || !picked.value) throw new Error('No transcript selected.');
+      const nuccoreId = picked.value;
+      const accession = picked.accession || '';
+      setActiveCheck('chkPlaceholder');
+      showStatus('Step: Downloading CDS from NCBI (efetch)…', 'loading');
+      const fasta = await fetchFastaCdsNa(nuccoreId);
+      showResults(fasta, geneSymbol, organism, accession);
+      showStatus('Step: Running ORF + BLAST (three NCBI jobs — may take several minutes)…', 'loading');
+      await runValidation(fasta, geneSymbol, organism, taxid, accession);
+      hideStatus();
+      setSideTab('checks');
+      showStatus('All checks complete', 'success');
+      playChecksDoneChime();
+    }
+
+    document.getElementById('soundOnChecksDone').addEventListener('change', () => {
+      resumeChecksDoneAudioIfNeeded();
+    });
+
+    document.getElementById('transcriptComboBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleTranscriptPanel();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!transcriptPanelOpen) return;
+      const root = document.getElementById('transcriptComboRoot');
+      if (root && !root.contains(e.target)) closeTranscriptPanel();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && transcriptPanelOpen) {
+        e.preventDefault();
+        closeTranscriptPanel();
+        document.getElementById('transcriptComboBtn')?.focus();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (transcriptPanelOpen) positionTranscriptPanel();
+    });
+
     document.getElementById('searchForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const organism = document.getElementById('organism').value;
       const gene = document.getElementById('gene').value.trim();
       const btn = document.getElementById('searchBtn');
+      const taxid = selectedTaxid();
 
       if (!gene) return;
 
       btn.disabled = true;
-      showStatus('Searching NCBI...', 'loading');
+      transcriptSelectionToken++;
+      closeTranscriptPanel();
+      lastContext = null;
+      document.getElementById('transcriptField').classList.add('hidden');
+      document.getElementById('results').innerHTML = '';
+      document.getElementById('validationBlocks').innerHTML = '';
+      setSideTab('progress');
+      progressLogClear();
+      progressLog(`Fetch CDS for "${gene}" (${organism})`);
 
       try {
-        const fasta = await fetchCDS(organism, gene);
-        hideStatus();
-        showResults(fasta, gene, organism);
+        showStatus('Step: Resolving gene and RefSeq transcripts (esearch → elink → esummary)…', 'loading');
+        const geneId = await esearchGene(organism, gene);
+        await delay(300);
+        const links = await elinkRefseqRna(geneId);
+        await delay(300);
+        const transcripts = await esummaryNuccore(links);
+        if (!transcripts.length) throw new Error('Could not summarize RefSeq RNA records.');
+
+        lastContext = { geneId, organism, geneSymbol: gene, taxid, transcripts };
+        fillTranscriptPicker(transcripts);
+        showWorkspaceShell(gene, organism);
+        showStatus('Transcript list ready. Downloading CDS for the selected NM_…', 'loading');
+        await loadCdsAndValidate();
       } catch (err) {
-        showStatus(err.message, 'error');
-        document.getElementById('results').style.display = 'none';
+        progressLog(`Error: ${err.message || err}`);
+        showStatus(err.message || String(err), 'error');
+        if (!lastContext) {
+          document.getElementById('results').innerHTML = '';
+          document.getElementById('validationBlocks').innerHTML = '';
+          document.getElementById('transcriptField').classList.add('hidden');
+        }
       } finally {
         btn.disabled = false;
       }
     });
+
+    if (useLocalServer()) {
+      try {
+        new EventSource('/session');
+      } catch (e) { /* ignore */ }
+    }
   </script>
 </body>
 </html>
