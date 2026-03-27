@@ -63,26 +63,134 @@
       gap: 0.75rem;
     }
 
-    .side-sound-option {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      padding: 0 0.15rem;
-    }
-
-    .side-sound-option label {
+    .side-sound-bar {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      cursor: pointer;
-      font-weight: 400;
-      color: var(--text-muted);
+      justify-content: flex-end;
+      gap: 0.45rem;
+      width: 100%;
+      flex-wrap: wrap;
     }
 
-    .side-sound-option input[type="checkbox"] {
-      width: 1rem;
-      height: 1rem;
-      accent-color: var(--accent);
+    .sound-preset-select {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 0.72rem;
+      padding: 0.35rem 0.45rem;
+      max-width: 10.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
       cursor: pointer;
+    }
+
+    .sound-preset-select:hover {
+      border-color: #3d4d66;
+    }
+
+    .sound-debug-btn {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 0.35rem 0.55rem;
+      background: var(--surface);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      align-self: center;
+    }
+
+    .sound-debug-btn:hover {
+      background: var(--surface);
+      border-color: #3d4d66;
+      color: var(--text);
+      transform: none;
+    }
+
+    .sound-debug-btn:active {
+      transform: none;
+    }
+
+    .sound-icon-btn {
+      width: 2.35rem;
+      height: 2.35rem;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .sound-icon-btn:hover {
+      background: var(--surface);
+      border-color: #3d4d66;
+      color: var(--text);
+      transform: none;
+    }
+
+    .sound-icon-btn:active {
+      transform: none;
+    }
+
+    .sound-icon-btn svg {
+      width: 1.15rem;
+      height: 1.15rem;
+      display: block;
+    }
+
+    .sound-icon-btn[aria-pressed="true"] {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .sound-icon-hover-wrap {
+      position: relative;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+
+    .sound-toggle-hint-shell {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.3s ease;
+      width: max-content;
+      max-width: min(15.5rem, calc(100vw - 2.5rem));
+      justify-self: end;
+    }
+
+    .sound-icon-hover-wrap:hover .sound-toggle-hint-shell {
+      grid-template-rows: 1fr;
+    }
+
+    .sound-toggle-hint-inner {
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .sound-toggle-hint-text {
+      margin: 0.4rem 0 0;
+      padding: 0;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 0.7rem;
+      line-height: 1.4;
+      color: var(--text-muted);
+      text-align: right;
+      transform: translateY(-6px);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.22s ease;
+    }
+
+    .sound-icon-hover-wrap:hover .sound-toggle-hint-text {
+      transform: translateY(0);
+      opacity: 1;
     }
 
     @media (max-width: 900px) {
@@ -238,7 +346,6 @@
       border-radius: 8px;
       cursor: pointer;
       transition: background 0.15s, transform 0.1s;
-      align-self: flex-start;
     }
 
     button:hover {
@@ -381,6 +488,45 @@
       background: rgba(63, 185, 80, 0.15);
       color: var(--success);
       border: 1px solid var(--success);
+    }
+
+    .status .status-success-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .status .status-success-row .status-message {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .status-dismiss {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.25rem 0.5rem;
+      margin: 0;
+      flex-shrink: 0;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      color: var(--success);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .status-dismiss:hover {
+      background: rgba(63, 185, 80, 0.12);
+      color: var(--success);
+      transform: none;
+      text-decoration: none;
+    }
+
+    .status-dismiss:active {
+      transform: none;
     }
 
     .meta {
@@ -648,11 +794,46 @@
             <div class="check-scroll" id="validationBlocks"></div>
           </div>
         </div>
-        <div class="side-sound-option">
-          <label>
-            <input type="checkbox" id="soundOnChecksDone" />
-            Play Sound on Checks Finished?
-          </label>
+        <div class="side-sound-bar">
+          <select id="soundPresetSelect" class="sound-preset-select" aria-label="Completion sound preset">
+            <option value="chime">Chime (two-tone)</option>
+            <option value="ding">Short ding</option>
+            <option value="arpeggio">Arpeggio</option>
+            <option value="glass">Glass ping</option>
+            <option value="soft">Soft bell</option>
+            <option value="beep">Digital beep</option>
+          </select>
+          <button type="button" class="sound-debug-btn" id="soundTestBtn" title="Play the selected sound now">
+            Test sound
+          </button>
+          <div class="sound-icon-hover-wrap">
+            <button
+              type="button"
+              class="sound-icon-btn"
+              id="soundToggleBtn"
+              aria-pressed="false"
+              aria-label="Completion sound off. Click to enable."
+            >
+              <span class="sound-icon-on" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 18V5l12-2v13" />
+                  <circle cx="6" cy="18" r="4" fill="currentColor" stroke="none" />
+                </svg>
+              </span>
+              <span class="sound-icon-off" hidden aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 18V5l12-2v13" opacity="0.42" />
+                  <circle cx="6" cy="18" r="4" fill="currentColor" stroke="none" opacity="0.42" />
+                  <line x1="2" y1="22" x2="22" y2="2" stroke-width="2.25" />
+                </svg>
+              </span>
+            </button>
+            <div class="sound-toggle-hint-shell" aria-hidden="true">
+              <div class="sound-toggle-hint-inner">
+                <p class="sound-toggle-hint-text" id="soundToggleHintText">Will not play sound when all checks are finished</p>
+              </div>
+            </div>
+          </div>
         </div>
       </aside>
     </div>
@@ -662,6 +843,7 @@
     const NCBI_BASE = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils';
     const HUMAN_TAXID = 9606;
     const STOPS = new Set(['TAA', 'TAG', 'TGA']);
+    const DNA_BASES = new Set(['A', 'T', 'C', 'G']);
 
     let lastContext = null;
     let statusStepTimer = null;
@@ -669,47 +851,192 @@
     let transcriptPanelOpen = false;
     let transcriptSelectionToken = 0;
     let checksDoneAudioCtx = null;
+    const LS_SOUND_ON = 'geneCdsSoundOnComplete';
+    const LS_SOUND_PRESET = 'geneCdsSoundPreset';
 
-    function resumeChecksDoneAudioIfNeeded() {
-      const el = document.getElementById('soundOnChecksDone');
-      if (!el || !el.checked) return;
-      try {
-        if (!checksDoneAudioCtx) {
-          checksDoneAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (checksDoneAudioCtx.state === 'suspended') checksDoneAudioCtx.resume();
-      } catch (e) { /* ignore */ }
+    function getSoundPreset() {
+      const sel = document.getElementById('soundPresetSelect');
+      return sel && sel.value ? sel.value : 'chime';
     }
 
-    function playChecksDoneChime() {
-      const el = document.getElementById('soundOnChecksDone');
-      if (!el || !el.checked) return;
-      try {
-        if (!checksDoneAudioCtx) {
-          checksDoneAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function isSoundEnabled() {
+      const btn = document.getElementById('soundToggleBtn');
+      return !!(btn && btn.getAttribute('aria-pressed') === 'true');
+    }
+
+    function syncSoundToggleIcons() {
+      const btn = document.getElementById('soundToggleBtn');
+      if (!btn) return;
+      const on = btn.getAttribute('aria-pressed') === 'true';
+      const iconOn = btn.querySelector('.sound-icon-on');
+      const iconOff = btn.querySelector('.sound-icon-off');
+      if (iconOn) iconOn.hidden = !on;
+      if (iconOff) iconOff.hidden = on;
+      btn.setAttribute(
+        'aria-label',
+        on ? 'Completion sound on. Click to disable.' : 'Completion sound off. Click to enable.'
+      );
+      const hint = document.getElementById('soundToggleHintText');
+      if (hint) {
+        hint.textContent = on
+          ? 'Play sound when all checks are finished.'
+          : 'Will not play sound when all checks are finished';
+      }
+    }
+
+    async function ensureAudioContext() {
+      if (!checksDoneAudioCtx) {
+        checksDoneAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (checksDoneAudioCtx.state === 'suspended') {
+        await checksDoneAudioCtx.resume();
+      }
+      return checksDoneAudioCtx;
+    }
+
+    function scheduleCompletionSound(ctx, master, t0, preset) {
+      const env = (osc, start, peak, attack, decay) => {
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, start);
+        g.gain.exponentialRampToValueAtTime(Math.max(peak, 0.02), start + attack);
+        g.gain.exponentialRampToValueAtTime(0.0001, start + attack + decay);
+        osc.connect(g);
+        g.connect(master);
+      };
+
+      switch (preset) {
+        case 'ding': {
+          const o = ctx.createOscillator();
+          o.type = 'triangle';
+          o.frequency.value = 880;
+          env(o, t0, 0.45, 0.012, 0.11);
+          o.start(t0);
+          o.stop(t0 + 0.2);
+          break;
         }
-        const ctx = checksDoneAudioCtx;
-        if (ctx.state === 'suspended') ctx.resume();
-        const t0 = ctx.currentTime;
-        const master = ctx.createGain();
-        master.gain.value = 0.07;
-        master.connect(ctx.destination);
-        const freqs = [523.25, 659.25];
-        freqs.forEach((freq, i) => {
-          const osc = ctx.createOscillator();
+        case 'arpeggio': {
+          const freqs = [523.25, 659.25, 783.99, 1046.5];
+          freqs.forEach((f, i) => {
+            const o = ctx.createOscillator();
+            o.type = 'sine';
+            o.frequency.value = f;
+            const s = t0 + i * 0.075;
+            env(o, s, 0.38, 0.015, 0.16);
+            o.start(s);
+            o.stop(s + 0.22);
+          });
+          break;
+        }
+        case 'glass': {
+          const o = ctx.createOscillator();
+          o.type = 'sine';
+          o.frequency.setValueAtTime(1200, t0);
+          o.frequency.exponentialRampToValueAtTime(1800, t0 + 0.04);
+          env(o, t0, 0.25, 0.005, 0.22);
+          o.start(t0);
+          o.stop(t0 + 0.28);
+          const o2 = ctx.createOscillator();
+          o2.type = 'sine';
+          o2.frequency.value = 2400;
+          env(o2, t0, 0.08, 0.003, 0.08);
+          o2.start(t0);
+          o2.stop(t0 + 0.12);
+          break;
+        }
+        case 'soft': {
+          const o = ctx.createOscillator();
+          o.type = 'sine';
+          o.frequency.value = 659.25;
           const g = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.value = freq;
-          const start = t0 + i * 0.07;
-          g.gain.setValueAtTime(0.001, start);
-          g.gain.exponentialRampToValueAtTime(0.5, start + 0.02);
-          g.gain.exponentialRampToValueAtTime(0.001, start + 0.28);
-          osc.connect(g);
+          const start = t0;
+          g.gain.setValueAtTime(0.0001, start);
+          g.gain.exponentialRampToValueAtTime(0.2, start + 0.08);
+          g.gain.exponentialRampToValueAtTime(0.0001, start + 0.85);
+          o.connect(g);
           g.connect(master);
-          osc.start(start);
-          osc.stop(start + 0.32);
-        });
+          o.start(start);
+          o.stop(start + 0.9);
+          break;
+        }
+        case 'beep': {
+          const beep = (s) => {
+            const o = ctx.createOscillator();
+            o.type = 'square';
+            o.frequency.value = 720;
+            env(o, s, 0.12, 0.003, 0.045);
+            o.start(s);
+            o.stop(s + 0.06);
+          };
+          beep(t0);
+          beep(t0 + 0.09);
+          break;
+        }
+        case 'chime':
+        default: {
+          const freqs = [523.25, 659.25];
+          freqs.forEach((freq, i) => {
+            const o = ctx.createOscillator();
+            o.type = 'sine';
+            o.frequency.value = freq;
+            const s = t0 + i * 0.07;
+            env(o, s, 0.48, 0.018, 0.26);
+            o.start(s);
+            o.stop(s + 0.32);
+          });
+          break;
+        }
+      }
+    }
+
+    async function playChecksDoneSound(options = {}) {
+      const force = options.force === true;
+      if (!force && !isSoundEnabled()) return;
+      const preset = getSoundPreset();
+      try {
+        const ctx = await ensureAudioContext();
+        const t0 = ctx.currentTime + 0.02;
+        const master = ctx.createGain();
+        master.gain.value = preset === 'soft' ? 0.14 : preset === 'beep' ? 0.06 : 0.1;
+        master.connect(ctx.destination);
+        scheduleCompletionSound(ctx, master, t0, preset);
+      } catch (e) {
+        console.warn('Completion sound:', e);
+      }
+    }
+
+    function initSoundControls() {
+      const btn = document.getElementById('soundToggleBtn');
+      const sel = document.getElementById('soundPresetSelect');
+      const testBtn = document.getElementById('soundTestBtn');
+      if (!btn || !sel || !testBtn) return;
+      try {
+        const savedOn = localStorage.getItem(LS_SOUND_ON);
+        if (savedOn === '1') btn.setAttribute('aria-pressed', 'true');
+        else if (savedOn === '0') btn.setAttribute('aria-pressed', 'false');
+        const p = localStorage.getItem(LS_SOUND_PRESET);
+        if (p && [...sel.options].some((o) => o.value === p)) sel.value = p;
       } catch (e) { /* ignore */ }
+      syncSoundToggleIcons();
+
+      btn.addEventListener('click', () => {
+        const on = btn.getAttribute('aria-pressed') !== 'true';
+        btn.setAttribute('aria-pressed', String(on));
+        syncSoundToggleIcons();
+        try {
+          localStorage.setItem(LS_SOUND_ON, on ? '1' : '0');
+        } catch (e) { /* ignore */ }
+        void ensureAudioContext();
+      });
+
+      sel.addEventListener('change', () => {
+        try {
+          localStorage.setItem(LS_SOUND_PRESET, sel.value);
+        } catch (e) { /* ignore */ }
+      });
+
+      testBtn.addEventListener('click', () => {
+        void playChecksDoneSound({ force: true });
+      });
     }
 
     function formatStepElapsed(ms) {
@@ -934,6 +1261,20 @@
         statusStepTimer = setInterval(() => {
           timer.textContent = formatStepElapsed(Date.now() - statusStepStartedAt);
         }, 500);
+      } else if (type === 'success') {
+        const row = document.createElement('div');
+        row.className = 'status-success-row';
+        const msg = document.createElement('span');
+        msg.className = 'status-message';
+        msg.textContent = message;
+        const dismiss = document.createElement('button');
+        dismiss.type = 'button';
+        dismiss.className = 'status-dismiss';
+        dismiss.textContent = 'Dismiss';
+        dismiss.addEventListener('click', () => hideStatus());
+        row.appendChild(msg);
+        row.appendChild(dismiss);
+        wrap.appendChild(row);
       } else {
         wrap.textContent = message;
       }
@@ -1149,6 +1490,20 @@
       return { seq, nonAgctRemoved: stripped };
     }
 
+    function summarizeNonAtcg(raw) {
+      const upper = String(raw || '').toUpperCase().replace(/\s/g, '');
+      const counts = new Map();
+      for (const ch of upper) {
+        if (!DNA_BASES.has(ch)) counts.set(ch, (counts.get(ch) || 0) + 1);
+      }
+      if (!counts.size) return { line: 'Non-ATCG letters: none', hasAny: false };
+      const listed = [...counts.entries()]
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([ch, n]) => `${ch}(${n})`)
+        .join(', ');
+      return { line: `Non-ATCG letters: ${listed}`, hasAny: true };
+    }
+
     function checkORF(seq) {
       const notes = [];
       const len = seq.length;
@@ -1245,6 +1600,7 @@
       const lines = fasta.split('\n');
       const sequence = lines.slice(1).join('\n').replace(/\s/g, '');
       const { seq, nonAgctRemoved } = normalizeDNA(sequence);
+      const nonAtcg = summarizeNonAtcg(sequence);
       const fastaQuery = `>query_cds_${geneSymbol}\n${sequence}`;
 
       let orfNote = '';
@@ -1253,7 +1609,7 @@
       const orf = checkORF(seq);
       setBlock('blkOrf', {
         title: 'ORF structure',
-        metrics: [...orf.lines, ...(orf.notes.length ? ['—', ...orf.notes.map((n) => '• ' + n)] : [])].join('\n') || '(no data)',
+        metrics: [nonAtcg.line, ...orf.lines, ...(orf.notes.length ? ['—', ...orf.notes.map((n) => '• ' + n)] : [])].join('\n') || '(no data)',
         note: orfNote,
         state: orf.ok ? undefined : 'err',
       });
@@ -1451,6 +1807,7 @@
 
     async function loadCdsAndValidate() {
       if (!lastContext) return;
+      void ensureAudioContext();
       setSideTab('progress');
       const { organism, geneSymbol, taxid } = lastContext;
       const picked = getTranscriptSelection();
@@ -1466,12 +1823,10 @@
       hideStatus();
       setSideTab('checks');
       showStatus('All checks complete', 'success');
-      playChecksDoneChime();
+      void playChecksDoneSound();
     }
 
-    document.getElementById('soundOnChecksDone').addEventListener('change', () => {
-      resumeChecksDoneAudioIfNeeded();
-    });
+    initSoundControls();
 
     document.getElementById('transcriptComboBtn').addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1498,6 +1853,7 @@
 
     document.getElementById('searchForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      void ensureAudioContext();
       const organism = document.getElementById('organism').value;
       const gene = document.getElementById('gene').value.trim();
       const btn = document.getElementById('searchBtn');
