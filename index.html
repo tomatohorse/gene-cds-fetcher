@@ -54,6 +54,44 @@
       }
     }
 
+    .col-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .stop-job-btn {
+      width: 2.35rem;
+      height: 2.35rem;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .stop-job-btn:hover {
+      background: var(--surface);
+      border-color: #3d4d66;
+      color: var(--text);
+      transform: none;
+    }
+
+    .stop-job-btn:active {
+      transform: none;
+    }
+
+    .stop-job-btn svg {
+      width: 0.95rem;
+      height: 0.95rem;
+      display: block;
+    }
+
     .col-side {
       position: sticky;
       top: 1rem;
@@ -66,10 +104,18 @@
     .side-sound-bar {
       display: flex;
       align-items: center;
-      justify-content: flex-end;
       gap: 0.45rem;
       width: 100%;
       flex-wrap: wrap;
+    }
+
+    .side-sound-bar-trailing {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      margin-left: auto;
     }
 
     .sound-preset-select {
@@ -444,6 +490,32 @@
       letter-spacing: 0.02em;
     }
 
+    .sequence-block {
+      margin-top: 1.35rem;
+    }
+
+    .sequence-block-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+    }
+
+    .sequence-block-header .results-title {
+      flex: 1;
+      min-width: 10rem;
+    }
+
+    .sequence-block-note {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin: 0.4rem 0 0;
+      line-height: 1.45;
+      max-width: 52rem;
+    }
+
     .status {
       padding: 0.75rem 1rem;
       border-radius: 8px;
@@ -630,6 +702,31 @@
       white-space: normal;
       word-break: break-word;
       cursor: pointer;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 0.35rem 0.5rem;
+    }
+
+    .transcript-select-badge {
+      flex-shrink: 0;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.14rem 0.38rem;
+      border-radius: 4px;
+      background: rgba(88, 166, 255, 0.16);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      line-height: 1.2;
+      margin-top: 0.06rem;
+    }
+
+    .transcript-option-text {
+      flex: 1 1 10rem;
+      min-width: 0;
     }
 
     .transcript-list li:hover,
@@ -643,6 +740,92 @@
       background: transparent;
       color: var(--accent);
       box-shadow: inset 0 0 0 1px var(--accent);
+    }
+
+    #tabPanelChecks .checks-prefs {
+      flex-shrink: 0;
+      margin: 0 0 0.65rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .checks-prefs-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin: 0 0 0.45rem;
+    }
+
+    .pref-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      font-size: 0.78rem;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
+    .pref-toggle-row:first-of-type {
+      margin-top: 0.15rem;
+    }
+
+    .pref-toggle-label {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .pref-switch {
+      position: relative;
+      width: 2.5rem;
+      height: 1.35rem;
+      flex-shrink: 0;
+      border-radius: 999px;
+      background: #3d4d66;
+      transition: background 0.18s;
+    }
+
+    .pref-switch-input {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .pref-switch-input:focus-visible + .pref-switch-knob {
+      box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+    }
+
+    .pref-switch-knob {
+      position: absolute;
+      top: 0.15rem;
+      left: 0.15rem;
+      width: 1.05rem;
+      height: 1.05rem;
+      border-radius: 50%;
+      background: #c9d1d9;
+      transition: transform 0.18s;
+      pointer-events: none;
+    }
+
+    .pref-switch-input:checked + .pref-switch-knob {
+      transform: translateX(1.15rem);
+    }
+
+    .pref-switch.pref-switch-on {
+      background: rgba(88, 166, 255, 0.55);
+    }
+
+    .checks-prefs .pref-hint {
+      margin: 0.25rem 0 0;
+      font-size: 0.72rem;
     }
 
     #tabPanelChecks .check-scroll {
@@ -701,6 +884,36 @@
 
     .check-block.err .metrics {
       color: var(--error);
+    }
+
+    .check-retry-btn {
+      margin-top: 0.55rem;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 0.4rem 0.7rem;
+      align-self: flex-start;
+      background: var(--surface);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .check-retry-btn:hover {
+      background: var(--surface-hover);
+      color: var(--accent);
+      border-color: var(--accent);
+      transform: none;
+    }
+
+    .check-retry-btn:active {
+      transform: none;
+    }
+
+    .check-retry-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
     }
 
     #tabPanelProgress .progress-log {
@@ -783,54 +996,87 @@
       <aside class="col-side" aria-label="Progress and validation">
         <div class="side-card">
           <div class="tabs" role="tablist">
-            <button type="button" class="tab active" id="tabBtnProgress" role="tab" aria-selected="true" aria-controls="tabPanelProgress">Progress</button>
-            <button type="button" class="tab" id="tabBtnChecks" role="tab" aria-selected="false" aria-controls="tabPanelChecks">Checks</button>
+            <button type="button" class="tab active" id="tabBtnChecks" role="tab" aria-selected="true" aria-controls="tabPanelChecks">Checks</button>
+            <button type="button" class="tab" id="tabBtnProgress" role="tab" aria-selected="false" aria-controls="tabPanelProgress">Progress</button>
           </div>
-          <div id="tabPanelProgress" class="tab-panel active" role="tabpanel" aria-labelledby="tabBtnProgress">
+          <div id="tabPanelChecks" class="tab-panel active" role="tabpanel" aria-labelledby="tabBtnChecks">
+            <div class="checks-prefs" id="checksPrefsBar">
+              <p class="checks-prefs-title">Optional BLAST checks</p>
+              <label class="pref-toggle-row" for="prefBlastxSameSpecies">
+                <span class="pref-toggle-label">blastx · RefSeq protein · same species</span>
+                <span class="pref-switch">
+                  <input type="checkbox" class="pref-switch-input" id="prefBlastxSameSpecies" aria-describedby="prefBlastxHint" />
+                  <span class="pref-switch-knob" aria-hidden="true"></span>
+                </span>
+              </label>
+              <p class="tab-hint pref-hint" id="prefBlastxHint">Off by default. Enable before Fetch CDS to run and show this block.</p>
+              <label class="pref-toggle-row" for="prefBlastHumanProtein">
+                <span class="pref-toggle-label">Human protein check (blastp primary, blastx fallback)</span>
+                <span class="pref-switch">
+                  <input type="checkbox" class="pref-switch-input" id="prefBlastHumanProtein" aria-describedby="prefHumanHint" />
+                  <span class="pref-switch-knob" aria-hidden="true"></span>
+                </span>
+              </label>
+              <p class="tab-hint pref-hint" id="prefHumanHint">Off by default. Enable before Fetch CDS to run and show this block.</p>
+            </div>
+            <div class="check-scroll" id="validationBlocks"></div>
+          </div>
+          <div id="tabPanelProgress" class="tab-panel" role="tabpanel" aria-labelledby="tabBtnProgress">
             <p id="progressEmptyHint" class="tab-hint">Timestamps and NCBI steps appear here after you click Fetch CDS.</p>
             <pre id="progressLog" class="progress-log" hidden></pre>
           </div>
-          <div id="tabPanelChecks" class="tab-panel" role="tabpanel" aria-labelledby="tabBtnChecks">
-            <div class="check-scroll" id="validationBlocks"></div>
-          </div>
         </div>
         <div class="side-sound-bar">
-          <select id="soundPresetSelect" class="sound-preset-select" aria-label="Completion sound preset">
-            <option value="chime">Chime (two-tone)</option>
-            <option value="ding">Short ding</option>
-            <option value="arpeggio">Arpeggio</option>
-            <option value="glass">Glass ping</option>
-            <option value="soft">Soft bell</option>
-            <option value="beep">Digital beep</option>
-          </select>
-          <button type="button" class="sound-debug-btn" id="soundTestBtn" title="Play the selected sound now">
-            Test sound
+          <button
+            type="button"
+            class="stop-job-btn"
+            id="stopJobBtn"
+            hidden
+            title="Stop current fetch and checks"
+            aria-label="Stop current fetch and checks"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="6" y="6" width="12" height="12" rx="1.75" fill="currentColor" />
+            </svg>
           </button>
-          <div class="sound-icon-hover-wrap">
-            <button
-              type="button"
-              class="sound-icon-btn"
-              id="soundToggleBtn"
-              aria-pressed="false"
-              aria-label="Completion sound off. Click to enable."
-            >
-              <span class="sound-icon-on" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M9 18V5l12-2v13" />
-                  <circle cx="6" cy="18" r="4" fill="currentColor" stroke="none" />
-                </svg>
-              </span>
-              <span class="sound-icon-off" hidden aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M9 18V5l12-2v13" opacity="0.42" />
-                  <circle cx="6" cy="18" r="4" fill="currentColor" stroke="none" opacity="0.42" />
-                  <line x1="2" y1="22" x2="22" y2="2" stroke-width="2.25" />
-                </svg>
-              </span>
+          <div class="side-sound-bar-trailing">
+            <select id="soundPresetSelect" class="sound-preset-select" aria-label="Completion sound preset">
+              <option value="chime">Chime (two-tone)</option>
+              <option value="ding">Short ding</option>
+              <option value="arpeggio">Arpeggio</option>
+              <option value="glass">Glass ping</option>
+              <option value="soft">Soft bell</option>
+              <option value="beep">Digital beep</option>
+            </select>
+            <button type="button" class="sound-debug-btn" id="soundTestBtn" title="Play the selected sound now">
+              Test sound
             </button>
-            <div class="sound-toggle-hint-shell" aria-hidden="true">
-              <div class="sound-toggle-hint-inner">
-                <p class="sound-toggle-hint-text" id="soundToggleHintText">Will not play sound when all checks are finished</p>
+            <div class="sound-icon-hover-wrap">
+              <button
+                type="button"
+                class="sound-icon-btn"
+                id="soundToggleBtn"
+                aria-pressed="false"
+                aria-label="Completion sound off. Click to enable."
+              >
+                <span class="sound-icon-on" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 18V5l12-2v13" />
+                    <circle cx="6" cy="18" r="4" fill="currentColor" stroke="none" />
+                  </svg>
+                </span>
+                <span class="sound-icon-off" hidden aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 18V5l12-2v13" opacity="0.42" />
+                    <circle cx="6" cy="18" r="4" fill="currentColor" stroke="none" opacity="0.42" />
+                    <line x1="2" y1="22" x2="22" y2="2" stroke-width="2.25" />
+                  </svg>
+                </span>
+              </button>
+              <div class="sound-toggle-hint-shell" aria-hidden="true">
+                <div class="sound-toggle-hint-inner">
+                  <p class="sound-toggle-hint-text" id="soundToggleHintText">Will not play sound when all checks are finished</p>
+                </div>
               </div>
             </div>
           </div>
@@ -844,6 +1090,108 @@
     const HUMAN_TAXID = 9606;
     const STOPS = new Set(['TAA', 'TAG', 'TGA']);
     const DNA_BASES = new Set(['A', 'T', 'C', 'G']);
+    const CODON_TO_AA = Object.freeze({
+      TTT: 'F', TTC: 'F', TTA: 'L', TTG: 'L',
+      TCT: 'S', TCC: 'S', TCA: 'S', TCG: 'S',
+      TAT: 'Y', TAC: 'Y', TAA: '*', TAG: '*',
+      TGT: 'C', TGC: 'C', TGA: '*', TGG: 'W',
+      CTT: 'L', CTC: 'L', CTA: 'L', CTG: 'L',
+      CCT: 'P', CCC: 'P', CCA: 'P', CCG: 'P',
+      CAT: 'H', CAC: 'H', CAA: 'Q', CAG: 'Q',
+      CGT: 'R', CGC: 'R', CGA: 'R', CGG: 'R',
+      ATT: 'I', ATC: 'I', ATA: 'I', ATG: 'M',
+      ACT: 'T', ACC: 'T', ACA: 'T', ACG: 'T',
+      AAT: 'N', AAC: 'N', AAA: 'K', AAG: 'K',
+      AGT: 'S', AGC: 'S', AGA: 'R', AGG: 'R',
+      GTT: 'V', GTC: 'V', GTA: 'V', GTG: 'V',
+      GCT: 'A', GCC: 'A', GCA: 'A', GCG: 'A',
+      GAT: 'D', GAC: 'D', GAA: 'E', GAG: 'E',
+      GGT: 'G', GGC: 'G', GGA: 'G', GGG: 'G',
+    });
+
+    /**
+     * Homo sapiens codon frequencies (per thousand) from the Kazusa Codon Usage Database
+     * (gbpri, 93487 CDS). U→T for DNA. Used to choose the most common synonymous codon
+     * per amino acid (CAI-style heuristic, not tRNA adaptation or mRNA structure).
+     * @see https://www.kazusa.or.jp/codon/cgi-bin/showcodon.cgi?aa=1&species=9606&style=N
+     */
+    const HUMAN_CODON_PER_THOUSAND = Object.freeze({
+      TTT: 17.6, TTC: 20.3, TTA: 7.7, TTG: 12.9,
+      TCT: 15.2, TCC: 17.7, TCA: 12.2, TCG: 4.4,
+      TAT: 12.2, TAC: 15.3, TAA: 1.0, TAG: 0.8,
+      TGT: 10.6, TGC: 12.6, TGA: 1.6, TGG: 13.2,
+      CTT: 13.2, CTC: 19.6, CTA: 7.2, CTG: 39.6,
+      CCT: 17.5, CCC: 19.8, CCA: 16.9, CCG: 6.9,
+      CAT: 10.9, CAC: 15.1, CAA: 12.3, CAG: 34.2,
+      CGT: 4.5, CGC: 10.4, CGA: 6.2, CGG: 11.4,
+      ATT: 16.0, ATC: 20.8, ATA: 7.5, ATG: 22.0,
+      ACT: 13.1, ACC: 18.9, ACA: 15.1, ACG: 6.1,
+      AAT: 17.0, AAC: 19.1, AAA: 24.4, AAG: 31.9,
+      AGT: 12.1, AGC: 19.5, AGA: 12.2, AGG: 12.0,
+      GTT: 11.0, GTC: 14.5, GTA: 7.1, GTG: 28.1,
+      GCT: 18.4, GCC: 27.7, GCA: 15.8, GCG: 7.4,
+      GAT: 21.8, GAC: 25.1, GAA: 29.0, GAG: 39.6,
+      GGT: 10.8, GGC: 22.2, GGA: 16.5, GGG: 16.5,
+    });
+
+    let _humanOptimalByAa = null;
+    let _humanOptimalStop = null;
+
+    function getHumanCodonOptimizationMaps() {
+      if (_humanOptimalByAa) {
+        return { byAa: _humanOptimalByAa, stop: _humanOptimalStop };
+      }
+      const byAa = new Map();
+      for (const [codon, aa] of Object.entries(CODON_TO_AA)) {
+        if (aa === '*') continue;
+        const f = HUMAN_CODON_PER_THOUSAND[codon] ?? 0;
+        const cur = byAa.get(aa);
+        if (!cur || f > cur.f || (f === cur.f && codon < cur.codon)) {
+          byAa.set(aa, { codon, f });
+        }
+      }
+      const stops = ['TAA', 'TAG', 'TGA'];
+      let bestStop = 'TGA';
+      let bestF = -1;
+      for (const c of stops) {
+        const f = HUMAN_CODON_PER_THOUSAND[c] ?? 0;
+        if (f > bestF || (f === bestF && c < bestStop)) {
+          bestF = f;
+          bestStop = c;
+        }
+      }
+      _humanOptimalByAa = byAa;
+      _humanOptimalStop = bestStop;
+      return { byAa, stop: bestStop };
+    }
+
+    /**
+     * Same protein (standard code) as `seq`, with each codon replaced by the synonymous
+     * human codon with highest genomic usage (Kazusa); terminal stop → most-used human stop (TGA).
+     * Ambiguous/unknown triplets are copied through unchanged.
+     */
+    function humanOptimizeCodingDna(seq) {
+      const { byAa, stop } = getHumanCodonOptimizationMaps();
+      const out = [];
+      const n = Math.floor(seq.length / 3);
+      for (let i = 0; i < n; i++) {
+        const codon = seq.slice(i * 3, i * 3 + 3);
+        const isLast = i === n - 1;
+        const aa = CODON_TO_AA[codon] || 'X';
+        if (aa === '*') {
+          out.push(stop);
+          if (!isLast) {
+            /* keep going; rare broken ORFs */
+          }
+        } else if (aa === 'X' || codon.length < 3) {
+          out.push(codon);
+        } else {
+          const best = byAa.get(aa);
+          out.push(best ? best.codon : codon);
+        }
+      }
+      return out.join('');
+    }
 
     let lastContext = null;
     let statusStepTimer = null;
@@ -851,8 +1199,152 @@
     let transcriptPanelOpen = false;
     let transcriptSelectionToken = 0;
     let checksDoneAudioCtx = null;
-    const LS_SOUND_ON = 'geneCdsSoundOnComplete';
-    const LS_SOUND_PRESET = 'geneCdsSoundPreset';
+    /** Set while BLAST validation can run; used for per-step retry. */
+    let validationBlastContext = null;
+    let activeJobAbort = null;
+
+    function startActiveJob() {
+      if (activeJobAbort) activeJobAbort.abort();
+      activeJobAbort = new AbortController();
+      const b = document.getElementById('stopJobBtn');
+      if (b) b.hidden = false;
+      return activeJobAbort.signal;
+    }
+
+    function endActiveJob() {
+      activeJobAbort = null;
+      const b = document.getElementById('stopJobBtn');
+      if (b) b.hidden = true;
+    }
+    const LS_USER_PREFS = 'geneCdsUserPrefs';
+    const LS_SOUND_ON_LEGACY = 'geneCdsSoundOnComplete';
+    const LS_SOUND_PRESET_LEGACY = 'geneCdsSoundPreset';
+    const LS_LAST_ORGANISM = 'geneCdsLastOrganism';
+    const LS_LAST_GENE = 'geneCdsLastGene';
+
+    const DEFAULT_USER_PREFS = Object.freeze({
+      soundOnComplete: false,
+      soundPreset: 'chime',
+      blastxSameSpecies: false,
+      blastHumanProtein: false,
+    });
+
+    const userPrefs = {
+      soundOnComplete: DEFAULT_USER_PREFS.soundOnComplete,
+      soundPreset: DEFAULT_USER_PREFS.soundPreset,
+      blastxSameSpecies: DEFAULT_USER_PREFS.blastxSameSpecies,
+      blastHumanProtein: DEFAULT_USER_PREFS.blastHumanProtein,
+    };
+
+    function syncPrefSwitchTrackClass(checkbox) {
+      const track = checkbox && checkbox.closest('.pref-switch');
+      if (track) track.classList.toggle('pref-switch-on', !!checkbox.checked);
+    }
+
+    function loadUserPrefsFromStorage() {
+      userPrefs.soundOnComplete = DEFAULT_USER_PREFS.soundOnComplete;
+      userPrefs.soundPreset = DEFAULT_USER_PREFS.soundPreset;
+      userPrefs.blastxSameSpecies = DEFAULT_USER_PREFS.blastxSameSpecies;
+      userPrefs.blastHumanProtein = DEFAULT_USER_PREFS.blastHumanProtein;
+      try {
+        const raw = localStorage.getItem(LS_USER_PREFS);
+        if (raw) {
+          const o = JSON.parse(raw);
+          if (o && typeof o === 'object') {
+            if (typeof o.soundOnComplete === 'boolean') userPrefs.soundOnComplete = o.soundOnComplete;
+            if (typeof o.soundPreset === 'string') userPrefs.soundPreset = o.soundPreset;
+            if (typeof o.blastxSameSpecies === 'boolean') userPrefs.blastxSameSpecies = o.blastxSameSpecies;
+            if (typeof o.blastHumanProtein === 'boolean') userPrefs.blastHumanProtein = o.blastHumanProtein;
+          }
+        } else {
+          const legacyOn = localStorage.getItem(LS_SOUND_ON_LEGACY);
+          if (legacyOn === '1') userPrefs.soundOnComplete = true;
+          if (legacyOn === '0') userPrefs.soundOnComplete = false;
+          const legacyP = localStorage.getItem(LS_SOUND_PRESET_LEGACY);
+          if (legacyP) userPrefs.soundPreset = legacyP;
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    function persistUserPrefs() {
+      const btn = document.getElementById('soundToggleBtn');
+      const sel = document.getElementById('soundPresetSelect');
+      const bx = document.getElementById('prefBlastxSameSpecies');
+      const hu = document.getElementById('prefBlastHumanProtein');
+      userPrefs.soundOnComplete = !!(btn && btn.getAttribute('aria-pressed') === 'true');
+      userPrefs.soundPreset = sel && sel.value ? sel.value : userPrefs.soundPreset;
+      userPrefs.blastxSameSpecies = !!(bx && bx.checked);
+      userPrefs.blastHumanProtein = !!(hu && hu.checked);
+      try {
+        localStorage.setItem(LS_USER_PREFS, JSON.stringify(userPrefs));
+        localStorage.removeItem(LS_SOUND_ON_LEGACY);
+        localStorage.removeItem(LS_SOUND_PRESET_LEGACY);
+      } catch (e) { /* quota / private mode */ }
+    }
+
+    function applyUserPrefsToUI() {
+      const btn = document.getElementById('soundToggleBtn');
+      const sel = document.getElementById('soundPresetSelect');
+      const bx = document.getElementById('prefBlastxSameSpecies');
+      const hu = document.getElementById('prefBlastHumanProtein');
+      if (btn) btn.setAttribute('aria-pressed', String(userPrefs.soundOnComplete));
+      if (sel) {
+        if ([...sel.options].some((o) => o.value === userPrefs.soundPreset)) sel.value = userPrefs.soundPreset;
+      }
+      if (bx) {
+        bx.checked = userPrefs.blastxSameSpecies;
+        syncPrefSwitchTrackClass(bx);
+      }
+      if (hu) {
+        hu.checked = userPrefs.blastHumanProtein;
+        syncPrefSwitchTrackClass(hu);
+      }
+      syncSoundToggleIcons();
+    }
+
+    function isBlastxSameSpeciesEnabled() {
+      const el = document.getElementById('prefBlastxSameSpecies');
+      return !!(el && el.checked);
+    }
+
+    function isBlastHumanProteinEnabled() {
+      const el = document.getElementById('prefBlastHumanProtein');
+      return !!(el && el.checked);
+    }
+
+    function blastStepLabel(i, n) {
+      if (n <= 1) return 'BLAST: ';
+      return `BLAST ${i}/${n}: `;
+    }
+
+    function countEnabledBlastSteps() {
+      return 1 + (isBlastxSameSpeciesEnabled() ? 1 : 0) + (isBlastHumanProteinEnabled() ? 1 : 0);
+    }
+
+    function ncbiJobCountPhrase(n) {
+      if (n <= 1) return 'one NCBI job';
+      if (n === 2) return 'two NCBI jobs';
+      return 'three NCBI jobs';
+    }
+
+    function saveLastSearchForm(organism, gene) {
+      try {
+        localStorage.setItem(LS_LAST_ORGANISM, organism);
+        localStorage.setItem(LS_LAST_GENE, gene.slice(0, 200));
+      } catch (e) { /* quota / private mode */ }
+    }
+
+    function restoreLastSearchForm() {
+      const sel = document.getElementById('organism');
+      const inp = document.getElementById('gene');
+      if (!sel || !inp) return;
+      try {
+        const o = localStorage.getItem(LS_LAST_ORGANISM);
+        const g = localStorage.getItem(LS_LAST_GENE);
+        if (o && [...sel.options].some((opt) => opt.value === o)) sel.value = o;
+        if (g != null && g !== '') inp.value = g;
+      } catch (e) { /* ignore */ }
+    }
 
     function getSoundPreset() {
       const sel = document.getElementById('soundPresetSelect');
@@ -1004,39 +1496,51 @@
       }
     }
 
-    function initSoundControls() {
+    function maybeMigrateLegacyPrefsToUnified() {
+      try {
+        if (localStorage.getItem(LS_USER_PREFS)) return;
+        if (!localStorage.getItem(LS_SOUND_ON_LEGACY) && !localStorage.getItem(LS_SOUND_PRESET_LEGACY)) return;
+        persistUserPrefs();
+      } catch (e) { /* ignore */ }
+    }
+
+    function initUserPreferences() {
+      loadUserPrefsFromStorage();
+      applyUserPrefsToUI();
+      maybeMigrateLegacyPrefsToUnified();
+
       const btn = document.getElementById('soundToggleBtn');
       const sel = document.getElementById('soundPresetSelect');
       const testBtn = document.getElementById('soundTestBtn');
+      const bx = document.getElementById('prefBlastxSameSpecies');
+      const hu = document.getElementById('prefBlastHumanProtein');
       if (!btn || !sel || !testBtn) return;
-      try {
-        const savedOn = localStorage.getItem(LS_SOUND_ON);
-        if (savedOn === '1') btn.setAttribute('aria-pressed', 'true');
-        else if (savedOn === '0') btn.setAttribute('aria-pressed', 'false');
-        const p = localStorage.getItem(LS_SOUND_PRESET);
-        if (p && [...sel.options].some((o) => o.value === p)) sel.value = p;
-      } catch (e) { /* ignore */ }
-      syncSoundToggleIcons();
 
       btn.addEventListener('click', () => {
         const on = btn.getAttribute('aria-pressed') !== 'true';
         btn.setAttribute('aria-pressed', String(on));
         syncSoundToggleIcons();
-        try {
-          localStorage.setItem(LS_SOUND_ON, on ? '1' : '0');
-        } catch (e) { /* ignore */ }
+        persistUserPrefs();
         void ensureAudioContext();
       });
 
       sel.addEventListener('change', () => {
-        try {
-          localStorage.setItem(LS_SOUND_PRESET, sel.value);
-        } catch (e) { /* ignore */ }
+        persistUserPrefs();
       });
 
       testBtn.addEventListener('click', () => {
         void playChecksDoneSound({ force: true });
       });
+
+      const wirePrefSwitch = (el) => {
+        if (!el) return;
+        el.addEventListener('change', () => {
+          syncPrefSwitchTrackClass(el);
+          persistUserPrefs();
+        });
+      };
+      wirePrefSwitch(bx);
+      wirePrefSwitch(hu);
     }
 
     function formatStepElapsed(ms) {
@@ -1146,7 +1650,17 @@
         li.setAttribute('role', 'option');
         li.dataset.id = t.id;
         li.dataset.accession = t.accession;
-        li.textContent = `${t.accession} — ${t.title}`;
+        if (t.isRefseqSelect) {
+          const badge = document.createElement('span');
+          badge.className = 'transcript-select-badge';
+          badge.textContent = 'Select';
+          badge.title = 'RefSeq Select or MANE Select (NCBI GenBank KEYWORDS)';
+          li.appendChild(badge);
+        }
+        const line = document.createElement('span');
+        line.className = 'transcript-option-text';
+        line.textContent = `${t.accession} — ${t.title}`;
+        li.appendChild(line);
         li.tabIndex = -1;
         if (i === 0) {
           li.setAttribute('aria-selected', 'true');
@@ -1181,14 +1695,22 @@
       const myToken = ++transcriptSelectionToken;
       const btn = document.getElementById('searchBtn');
       btn.disabled = true;
+      const signal = startActiveJob();
       try {
         progressLog('Different transcript selected — refetching CDS and re-running checks…');
-        await loadCdsAndValidate();
+        await loadCdsAndValidate(signal);
       } catch (e) {
         if (myToken !== transcriptSelectionToken) return;
-        progressLog(`Error: ${e.message || e}`);
-        showStatus(e.message || String(e), 'error');
+        if (e.name === 'AbortError') {
+          progressLog('Stopped by user.');
+          hideStatus();
+          validationBlastContext = null;
+        } else {
+          progressLog(`Error: ${e.message || e}`);
+          showStatus(e.message || String(e), 'error');
+        }
       } finally {
+        endActiveJob();
         if (myToken === transcriptSelectionToken) btn.disabled = false;
       }
     }
@@ -1199,7 +1721,11 @@
       return window.location.port === '8765' && localHost;
     }
 
+    /** Buffered so we do not O(n²) string copies on every progress line. */
+    let progressLogLines = [];
+
     function progressLogClear() {
+      progressLogLines = [];
       const el = document.getElementById('progressLog');
       el.textContent = '';
       el.hidden = true;
@@ -1213,7 +1739,8 @@
       const el = document.getElementById('progressLog');
       el.hidden = false;
       const t = new Date().toLocaleTimeString(undefined, { hour12: false });
-      el.textContent += `[${t}] ${line}\n`;
+      progressLogLines.push(`[${t}] ${line}\n`);
+      el.textContent = progressLogLines.join('');
       el.scrollTop = el.scrollHeight;
     }
 
@@ -1298,53 +1825,107 @@
     document.getElementById('tabBtnProgress').addEventListener('click', () => setSideTab('progress'));
     document.getElementById('tabBtnChecks').addEventListener('click', () => setSideTab('checks'));
 
+    document.getElementById('validationBlocks').addEventListener('click', (e) => {
+      const t = e.target.closest('.check-retry-btn');
+      if (!t || t.disabled) return;
+      const step = t.dataset.blastStep;
+      if (!step) return;
+      void retryBlastStep(step);
+    });
+
     /** NCBI E-utilities: use local /proxy on localhost (same as efetch) + wall-clock timeout. */
-    async function ncbiFetch(url, timeoutMs = 120000) {
+    async function ncbiFetch(url, timeoutMs = 120000, externalSignal = null) {
       const target = useLocalServer()
         ? '/proxy?url=' + encodeURIComponent(url)
         : url;
       const ctrl = new AbortController();
       const t = setTimeout(() => ctrl.abort(), timeoutMs);
+      const onExternalAbort = () => ctrl.abort();
+      if (externalSignal) {
+        if (externalSignal.aborted) {
+          clearTimeout(t);
+          throw new DOMException('Aborted', 'AbortError');
+        }
+        externalSignal.addEventListener('abort', onExternalAbort);
+      }
       try {
         const res = await fetch(target, { signal: ctrl.signal });
         return res;
       } catch (e) {
         if (e.name === 'AbortError') {
+          if (externalSignal?.aborted) {
+            throw new DOMException('Aborted', 'AbortError');
+          }
           throw new Error(`NCBI request timed out after ${timeoutMs / 1000}s: ${url.slice(0, 80)}…`);
         }
         throw e;
       } finally {
         clearTimeout(t);
+        if (externalSignal) externalSignal.removeEventListener('abort', onExternalAbort);
       }
     }
 
-    const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+    async function delay(ms, externalSignal = null) {
+      if (!externalSignal) {
+        await new Promise((r) => setTimeout(r, ms));
+        return;
+      }
+      if (externalSignal.aborted) throw new DOMException('Aborted', 'AbortError');
+      await Promise.race([
+        new Promise((r) => setTimeout(r, ms)),
+        new Promise((_, rej) => {
+          externalSignal.addEventListener('abort', () => rej(new DOMException('Aborted', 'AbortError')), { once: true });
+        }),
+      ]);
+    }
+
+    /** Lets the browser paint and process input (avoids “Page unresponsive” during long JS). */
+    async function yieldToMain(externalSignal = null) {
+      await delay(0, externalSignal);
+    }
+
+    function paintYield() {
+      return new Promise((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+      });
+    }
 
     /**
      * NCBI eutils JSON occasionally includes raw control characters (e.g. newlines) inside
      * string values, which makes JSON.parse throw. Escape those only inside quoted strings.
+     * Uses buffered segments — per-character `out += c` freezes the tab on multi‑MB JSON.
      */
     function escapeControlCharsInJsonStringValues(s) {
-      let out = '';
+      const parts = [];
+      let buf = '';
+      const flush = () => {
+        if (buf.length) {
+          parts.push(buf);
+          buf = '';
+        }
+      };
       let i = 0;
       let inString = false;
-      while (i < s.length) {
+      const len = s.length;
+      while (i < len) {
         const c = s[i];
         if (!inString) {
           if (c === '"') {
+            flush();
+            parts.push('"');
             inString = true;
-            out += c;
             i++;
             continue;
           }
-          out += c;
+          buf += c;
           i++;
           continue;
         }
         if (c === '\\') {
-          out += c;
-          if (i + 1 < s.length) {
-            out += s[i + 1];
+          flush();
+          parts.push('\\');
+          if (i + 1 < len) {
+            parts.push(s[i + 1]);
             i += 2;
           } else {
             i++;
@@ -1352,33 +1933,49 @@
           continue;
         }
         if (c === '"') {
+          flush();
+          parts.push('"');
           inString = false;
-          out += c;
           i++;
           continue;
         }
         const code = c.charCodeAt(0);
         if (code <= 31) {
-          if (code === 9) out += '\\t';
-          else if (code === 10) out += '\\n';
-          else if (code === 13) out += '\\r';
-          else out += '\\u' + ('0000' + code.toString(16)).toUpperCase().slice(-4);
+          flush();
+          if (code === 9) parts.push('\\t');
+          else if (code === 10) parts.push('\\n');
+          else if (code === 13) parts.push('\\r');
+          else parts.push('\\u' + ('0000' + code.toString(16)).toUpperCase().slice(-4));
         } else {
-          out += c;
+          buf += c;
         }
         i++;
       }
-      return out;
+      flush();
+      return parts.join('');
     }
 
-    async function ncbiReadJson(res) {
+    async function ncbiReadJson(res, externalSignal = null) {
       const raw = await res.text();
+      await yieldToMain(externalSignal);
       const trimmed = raw.trim().replace(/^\uFEFF/, '');
+      const large = trimmed.length > 40000;
+      if (large) await yieldToMain(externalSignal);
       try {
         return JSON.parse(trimmed);
       } catch (firstErr) {
+        await yieldToMain(externalSignal);
+        let fixed;
         try {
-          return JSON.parse(escapeControlCharsInJsonStringValues(trimmed));
+          fixed = escapeControlCharsInJsonStringValues(trimmed);
+        } catch (e) {
+          throw new Error(
+            `NCBI returned JSON that could not be parsed (${firstErr.message}). Preview: ${trimmed.slice(0, 180).replace(/\s+/g, ' ')}…`
+          );
+        }
+        if (large) await yieldToMain(externalSignal);
+        try {
+          return JSON.parse(fixed);
         } catch {
           throw new Error(
             `NCBI returned JSON that could not be parsed (${firstErr.message}). Preview: ${trimmed.slice(0, 180).replace(/\s+/g, ' ')}…`
@@ -1412,12 +2009,12 @@
       return t ? parseInt(t, 10) : null;
     }
 
-    async function esearchGene(organism, geneSymbol) {
+    async function esearchGene(organism, geneSymbol, signal = null) {
       progressLog('NCBI esearch (gene): looking up symbol + organism…');
       const searchUrl = `${NCBI_BASE}/esearch.fcgi?db=gene&term=${encodeURIComponent(geneSymbol + '[Gene] AND ' + organism + '[orgn]')}&retmode=json`;
-      const searchRes = await ncbiFetch(searchUrl);
+      const searchRes = await ncbiFetch(searchUrl, 120000, signal);
       if (!searchRes.ok) throw new Error(`esearch failed: HTTP ${searchRes.status}`);
-      const searchData = await ncbiReadJson(searchRes);
+      const searchData = await ncbiReadJson(searchRes, signal);
       const esr = searchData?.esearchresult;
       if (esr?.ERROR) throw new Error(`NCBI esearch: ${esr.ERROR}`);
       const idList = esr?.idlist;
@@ -1428,12 +2025,12 @@
       return idList[0];
     }
 
-    async function elinkRefseqRna(geneId) {
+    async function elinkRefseqRna(geneId, signal = null) {
       progressLog('NCBI elink: gene → RefSeq RNA (nuccore)…');
       const linkUrl = `${NCBI_BASE}/elink.fcgi?dbfrom=gene&db=nuccore&id=${geneId}&linkname=gene_nuccore_refseqrna&retmode=json`;
-      const linkRes = await ncbiFetch(linkUrl);
+      const linkRes = await ncbiFetch(linkUrl, 120000, signal);
       if (!linkRes.ok) throw new Error(`elink failed: HTTP ${linkRes.status}`);
-      const linkData = await ncbiReadJson(linkRes);
+      const linkData = await ncbiReadJson(linkRes, signal);
       const links = linkData?.linksets?.[0]?.linksetdbs?.[0]?.links;
       if (!links || links.length === 0) {
         throw new Error('No RefSeq RNA linked for this gene.');
@@ -1442,16 +2039,16 @@
       return links;
     }
 
-    async function esummaryNuccore(ids) {
+    async function esummaryNuccore(ids, signal = null) {
       progressLog(`NCBI esummary (nuccore): fetching titles for ${ids.length} transcript(s)…`);
       const chunkSize = 80;
       const out = [];
       for (let i = 0; i < ids.length; i += chunkSize) {
         const chunk = ids.slice(i, i + chunkSize);
         const url = `${NCBI_BASE}/esummary.fcgi?db=nuccore&id=${chunk.join(',')}&retmode=json`;
-        const res = await ncbiFetch(url);
+        const res = await ncbiFetch(url, 120000, signal);
         if (!res.ok) throw new Error(`esummary failed: HTTP ${res.status}`);
-        const data = await ncbiReadJson(res);
+        const data = await ncbiReadJson(res, signal);
         const result = data.result;
         if (!result || !result.uids) continue;
         for (const uid of result.uids) {
@@ -1461,7 +2058,8 @@
           const title = o.title || '';
           out.push({ id: String(uid), accession: String(acc), title });
         }
-        if (i + chunkSize < ids.length) await delay(350);
+        await yieldToMain(signal);
+        if (i + chunkSize < ids.length) await delay(350, signal);
       }
       const order = new Map(ids.map((id, idx) => [String(id), idx]));
       out.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
@@ -1469,11 +2067,88 @@
       return out;
     }
 
-    async function fetchFastaCdsNa(nuccoreId) {
+    /**
+     * RefSeq "Select" is not in nuccore esummary JSON; it appears in GenBank KEYWORDS
+     * (e.g. "RefSeq; RefSeq Select."). Human MANE-matched NM_ records use "MANE Select." there.
+     */
+    function genbankKeywordsPreferSelect(keywordsLine) {
+      const kw = keywordsLine || '';
+      return (
+        /\bRefSeq\s+Select\b/i.test(kw) ||
+        /\bMANE\s+Select\b/i.test(kw)
+      );
+    }
+
+    async function fetchRefseqSelectFlagsFromGenbank(ids, signal = null) {
+      const flags = new Map();
+      const chunkSize = 25;
+      for (let start = 0; start < ids.length; start += chunkSize) {
+        const chunk = ids.slice(start, start + chunkSize);
+        const url = `${NCBI_BASE}/efetch.fcgi?db=nuccore&id=${chunk.join(',')}&rettype=gb&retmode=text`;
+        const res = await ncbiFetch(url, 180000, signal);
+        if (!res.ok) throw new Error(`efetch GenBank batch failed: HTTP ${res.status}`);
+        const text = await res.text();
+        await yieldToMain(signal);
+        const head = text.slice(0, 400).toLowerCase();
+        if (!text.trim() || head.includes('<html') || head.includes('error')) {
+          throw new Error('efetch GenBank returned an unexpected body');
+        }
+        const records = text.split(/\n\/\/\n/).filter((s) => s.trim().length > 0);
+        await yieldToMain(signal);
+        if (records.length !== chunk.length) {
+          progressLog(
+            `GenBank batch: got ${records.length} record(s) for ${chunk.length} id(s); RefSeq Select detection may be partial for this chunk.`
+          );
+        }
+        chunk.forEach((rawId, j) => {
+          const block = records[j] || '';
+          const m = block.match(/^KEYWORDS\s+(.+)$/m);
+          const prefer = genbankKeywordsPreferSelect(m ? m[1] : '');
+          flags.set(String(rawId), prefer);
+        });
+        await yieldToMain(signal);
+        if (start + chunkSize < ids.length) await delay(350, signal);
+      }
+      return flags;
+    }
+
+    async function prioritizeRefseqSelectTranscripts(transcripts, signal = null) {
+      if (!transcripts.length) return transcripts;
+      try {
+        progressLog('NCBI efetch: checking GenBank KEYWORDS for RefSeq Select / MANE Select…');
+        const flags = await fetchRefseqSelectFlagsFromGenbank(transcripts.map((t) => t.id), signal);
+        const keyed = transcripts.map((t, i) => ({ t, i, sel: !!flags.get(String(t.id)) }));
+        keyed.sort((a, b) => {
+          if (a.sel === b.sel) return a.i - b.i;
+          return a.sel ? -1 : 1;
+        });
+        const nSel = keyed.filter((x) => x.sel).length;
+        if (nSel) {
+          progressLog(
+            `${nSel} transcript(s) tagged RefSeq Select or MANE Select — those are listed first (default choice).`
+          );
+        } else {
+          progressLog('No RefSeq Select / MANE Select keywords found; transcript order unchanged from NCBI elink.');
+        }
+        keyed.forEach((x) => {
+          x.t.isRefseqSelect = x.sel;
+        });
+        return keyed.map((x) => x.t);
+      } catch (e) {
+        if (e.name === 'AbortError') throw e;
+        progressLog(`RefSeq Select ordering skipped: ${e.message || e}`);
+        transcripts.forEach((t) => {
+          t.isRefseqSelect = false;
+        });
+        return transcripts;
+      }
+    }
+
+    async function fetchFastaCdsNa(nuccoreId, signal = null) {
       const via = useLocalServer() ? 'local /proxy' : 'public CORS proxy (slow)';
       progressLog(`NCBI efetch: fasta_cds_na for UID ${nuccoreId} (${via})…`);
       const fetchUrl = `${NCBI_BASE}/efetch.fcgi?db=nuccore&id=${nuccoreId}&rettype=fasta_cds_na&retmode=text`;
-      const fetchRes = await ncbiFetch(fetchUrl, 180000);
+      const fetchRes = await ncbiFetch(fetchUrl, 180000, signal);
       if (!fetchRes.ok) throw new Error(`efetch CDS failed: HTTP ${fetchRes.status}`);
       const text = await fetchRes.text();
       if (text && text.trim().startsWith('>') && text.includes('\n')) {
@@ -1488,6 +2163,18 @@
       const stripped = upper.replace(/[ACGT]/g, '').length;
       const seq = upper.replace(/[^ACGT]/g, '');
       return { seq, nonAgctRemoved: stripped };
+    }
+
+    /** One spreadsheet cell on a TSV row: no tabs or line breaks (would break multi-column paste). */
+    function tsvCell(value) {
+      return String(value ?? '').replace(/\r?\n/g, '').replace(/\t/g, ' ');
+    }
+
+    /** Same letter counts as ORF "Non-ATCG letters" line; compact for a spreadsheet cell. */
+    function uncertaintyForSpreadsheet(rawSequence) {
+      const s = summarizeNonAtcg(rawSequence);
+      if (!s.hasAny) return '-';
+      return s.line.replace(/^Non-ATCG letters:\s*/i, '').trim();
     }
 
     function summarizeNonAtcg(raw) {
@@ -1534,17 +2221,78 @@
       return { ok: notes.length === 0, lines, notes };
     }
 
-    function formatHitLines(hits, max = 3) {
+    function translateCodingDNA(seq) {
+      let aa = '';
+      let internalStops = 0;
+      let unknownCodons = 0;
+      const codonCount = Math.floor(seq.length / 3);
+      for (let i = 0; i < codonCount * 3; i += 3) {
+        const codon = seq.slice(i, i + 3);
+        const residue = CODON_TO_AA[codon] || 'X';
+        if (residue === 'X') unknownCodons++;
+        if (residue === '*' && i + 3 < codonCount * 3) internalStops++;
+        aa += residue;
+      }
+      const aaNoTerminalStop = aa.endsWith('*') ? aa.slice(0, -1) : aa;
+      return { aa, aaNoTerminalStop, internalStops, unknownCodons };
+    }
+
+    /**
+     * RefSeq deflines often include the official gene symbol in parentheses, e.g.
+     * "... breast cancer 1 (BRCA1), transcript variant 1, mRNA".
+     */
+    function geneFromBlastTitle(title) {
+      if (!title) return '';
+      const skipParen = new Set([
+        'mrna', 'ncrna', 'trna', 'rrna', 'snrna', 'snorna', 'lncrna', 'cds', 'dna', 'rna',
+        'refseq', 'predicted', 'pseudogene', 'partial', 'complete',
+      ]);
+      const re = /\(([^()]+)\)/g;
+      const symbolLike = [];
+      let m;
+      while ((m = re.exec(title)) !== null) {
+        const inner = m[1].trim();
+        if (!/^[A-Za-z0-9][A-Za-z0-9.\-]{0,24}$/.test(inner)) continue;
+        if (skipParen.has(inner.toLowerCase())) continue;
+        symbolLike.push(inner);
+      }
+      if (symbolLike.length) return symbolLike[symbolLike.length - 1];
+      const any = /\(([^()]+)\)/.exec(title);
+      if (!any) return '';
+      const fallback = any[1].trim();
+      if (skipParen.has(fallback.toLowerCase())) return '';
+      return fallback;
+    }
+
+    /** BLAST JSON2 maps the web "Description" column to description[0].title (full RefSeq defline). */
+    function formatHitLines(hits, max = 5) {
       if (!hits || !hits.length) return ['(no hits)'];
-      return hits.slice(0, max).map((h, i) => {
-        const title = (h.title || '').slice(0, 70) + ((h.title || '').length > 70 ? '…' : '');
-        return `${i + 1}. ${h.accession || '—'} | ident ${h.pct_identity}% | qcov ${h.query_cover_pct}% | align ${h.align_len} | E ${fmtE(h.evalue)} | bit ${h.bit_score != null ? h.bit_score : '—'}\n   ${title}`;
+      const sorted = [...hits].sort((a, b) => {
+        const pa = a.pct_identity != null ? Number(a.pct_identity) : -1;
+        const pb = b.pct_identity != null ? Number(b.pct_identity) : -1;
+        return pb - pa;
+      });
+      return sorted.slice(0, max).map((h, i) => {
+        const acc = h.accession || '—';
+        const rawTitle = (h.title || '').trim() || '(no description)';
+        const gene = geneFromBlastTitle(rawTitle);
+        const label = gene || acc;
+        const pct = h.pct_identity != null ? String(h.pct_identity) : '—';
+        return `${i + 1}. ${label} — ${pct}% identity\n   ${rawTitle} · ${acc}`;
       });
     }
 
-    async function postBlast(body) {
+    async function postBlast(body, externalSignal = null) {
       const ctrl = new AbortController();
       const t = setTimeout(() => ctrl.abort(), 600000);
+      const onExternalAbort = () => ctrl.abort();
+      if (externalSignal) {
+        if (externalSignal.aborted) {
+          clearTimeout(t);
+          throw new DOMException('Aborted', 'AbortError');
+        }
+        externalSignal.addEventListener('abort', onExternalAbort);
+      }
       let res;
       try {
         res = await fetch('/api/blast', {
@@ -1554,10 +2302,14 @@
           signal: ctrl.signal,
         });
       } catch (e) {
-        if (e.name === 'AbortError') throw new Error('BLAST request timed out after 10 minutes (server may still be busy).');
+        if (e.name === 'AbortError') {
+          if (externalSignal?.aborted) throw new DOMException('Aborted', 'AbortError');
+          throw new Error('BLAST request timed out after 10 minutes (server may still be busy).');
+        }
         throw e;
       } finally {
         clearTimeout(t);
+        if (externalSignal) externalSignal.removeEventListener('abort', onExternalAbort);
       }
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || `BLAST HTTP ${res.status}`);
@@ -1574,67 +2326,40 @@
       el.querySelector('.metrics').textContent = metrics;
       const ne = el.querySelector('.note');
       ne.textContent = note || '';
+      const retryBtn = el.querySelector('.check-retry-btn');
+      if (retryBtn) {
+        const show = state === 'err' && validationBlastContext && useLocalServer();
+        retryBtn.hidden = !show;
+      }
     }
 
     function buildValidationSkeleton() {
-      const ids = [
-        ['blkOrf', 'ORF structure'],
-        ['blkBlastn', 'blastn · RefSeq RNA · same species'],
-        ['blkBlastx', 'blastx · RefSeq protein · same species'],
-        ['blkBlastxHuman', 'blastx · RefSeq protein · human'],
+      const rows = [
+        ['blkOrf', 'ORF structure', null],
+        ['blkBlastn', 'blastn · RefSeq RNA · same species', 'blastn'],
       ];
-      document.getElementById('validationBlocks').innerHTML = ids
-        .map(
-          ([id, t]) =>
-            `<div class="check-block pending" id="${id}"><h3>${escapeHtml(t)}</h3><div class="metrics">…</div><p class="note"></p></div>`
-        )
+      if (isBlastxSameSpeciesEnabled()) {
+        rows.push(['blkBlastx', 'blastx · RefSeq protein · same species', 'blastx']);
+      }
+      if (isBlastHumanProteinEnabled()) {
+        rows.push(['blkBlastxHuman', 'human protein check (blastp primary, blastx fallback)', 'blastxHuman']);
+      }
+      document.getElementById('validationBlocks').innerHTML = rows
+        .map(([id, t, blastStep]) => {
+          const retry =
+            blastStep != null
+              ? `<button type="button" class="check-retry-btn" hidden data-blast-step="${blastStep}">Retry this BLAST</button>`
+              : '';
+          return `<div class="check-block pending" id="${id}"><h3>${escapeHtml(t)}</h3><div class="metrics">…</div><p class="note"></p>${retry}</div>`;
+        })
         .join('');
     }
 
-    async function runValidation(fasta, geneSymbol, organism, taxid, selectedAccession) {
-      setChecksRunningHint(true);
-      try {
-      progressLog('ORF: scanning reading frame (local)…');
-      buildValidationSkeleton();
-      setActiveCheck('blkOrf');
-      const lines = fasta.split('\n');
-      const sequence = lines.slice(1).join('\n').replace(/\s/g, '');
-      const { seq, nonAgctRemoved } = normalizeDNA(sequence);
-      const nonAtcg = summarizeNonAtcg(sequence);
-      const fastaQuery = `>query_cds_${geneSymbol}\n${sequence}`;
-
-      let orfNote = '';
-      if (nonAgctRemoved) orfNote = `${nonAgctRemoved} non-AGCT character(s) removed before ORF scan. `;
-      orfNote += 'Nuclear genetic code; mitochondrial genes may violate start/stop rules.';
-      const orf = checkORF(seq);
-      setBlock('blkOrf', {
-        title: 'ORF structure',
-        metrics: [nonAtcg.line, ...orf.lines, ...(orf.notes.length ? ['—', ...orf.notes.map((n) => '• ' + n)] : [])].join('\n') || '(no data)',
-        note: orfNote,
-        state: orf.ok ? undefined : 'err',
-      });
-
-      progressLog('ORF done.');
-      if (!useLocalServer()) {
-        progressLog('Skipping BLAST: open via http://127.0.0.1:8765 or http://localhost:8765 with server.py');
-        const msg =
-          'BLAST checks need this page at http://127.0.0.1:8765 or http://localhost:8765 with python3 server.py. ORF still ran.';
-        const titles = [
-          ['blkBlastn', 'blastn · RefSeq RNA · same species'],
-          ['blkBlastx', 'blastx · RefSeq protein · same species'],
-          ['blkBlastxHuman', 'blastx · RefSeq protein · human'],
-        ];
-        titles.forEach(([id, title]) => {
-          setBlock(id, { title, metrics: msg, note: '', state: 'err' });
-        });
-        setActiveCheck(null);
-        return;
-      }
-
-      const entrezSpecies = taxid != null ? `txid${taxid}[ORGN]` : null;
-      const entrezHuman = `txid${HUMAN_TAXID}[ORGN]`;
-
-      showStatus('BLAST 1/3: nucleotide vs RefSeq RNA (same species) — often 30s–3 min…', 'loading');
+    async function runBlastNCheck(ctx, signal = null, blastMeta = null) {
+      const { fastaQuery, entrezSpecies, selectedAccession } = ctx;
+      const n = blastMeta && blastMeta.n ? blastMeta.n : 1;
+      const i = blastMeta && blastMeta.i ? blastMeta.i : 1;
+      showStatus(`${blastStepLabel(i, n)}nucleotide vs RefSeq RNA (same species) — often 30s–3 min…`, 'loading');
       progressLog('BLAST blastn: submitting to NCBI…');
       setBlock('blkBlastn', {
         title: 'blastn · RefSeq RNA · same species',
@@ -1644,13 +2369,16 @@
       });
       setActiveCheck('blkBlastn');
       try {
-        const bn = await postBlast({
-          program: 'blastn',
-          database: 'refseq_rna',
-          query: fastaQuery,
-          entrez_query: entrezSpecies,
-          hitlist_size: 10,
-        });
+        const bn = await postBlast(
+          {
+            program: 'blastn',
+            database: 'refseq_rna',
+            query: fastaQuery,
+            entrez_query: entrezSpecies,
+            hitlist_size: 10,
+          },
+          signal
+        );
         const linesH = formatHitLines(bn.hits);
         let note =
           'Top hits are RefSeq RNAs. Compare accessions to your chosen NM_. High identity + high query coverage usually mean the fetch matches that transcript class.';
@@ -1668,6 +2396,7 @@
         });
         progressLog('BLAST blastn finished.');
       } catch (e) {
+        if (e.name === 'AbortError') throw e;
         progressLog(`BLAST blastn error: ${e.message || e}`);
         setBlock('blkBlastn', {
           title: 'blastn · RefSeq RNA · same species',
@@ -1677,8 +2406,13 @@
         });
       }
       setActiveCheck(null);
+    }
 
-      showStatus('BLAST 2/3: translated CDS vs RefSeq protein (same species)…', 'loading');
+    async function runBlastxSpeciesCheck(ctx, signal = null, blastMeta = null) {
+      const { fastaQuery, entrezSpecies } = ctx;
+      const n = blastMeta && blastMeta.n ? blastMeta.n : 1;
+      const i = blastMeta && blastMeta.i ? blastMeta.i : 1;
+      showStatus(`${blastStepLabel(i, n)}translated CDS vs RefSeq protein (same species)…`, 'loading');
       progressLog('BLAST blastx (same species): submitting…');
       setBlock('blkBlastx', {
         title: 'blastx · RefSeq protein · same species',
@@ -1688,21 +2422,27 @@
       });
       setActiveCheck('blkBlastx');
       try {
-        const bx = await postBlast({
-          program: 'blastx',
-          database: 'refseq_protein',
-          query: fastaQuery,
-          entrez_query: entrezSpecies,
-          hitlist_size: 10,
-        });
+        const bx = await postBlast(
+          {
+            program: 'blastx',
+            database: 'refseq_protein',
+            query: fastaQuery,
+            entrez_query: entrezSpecies,
+            hitlist_size: 10,
+          },
+          signal
+        );
         setBlock('blkBlastx', {
           title: 'blastx · RefSeq protein · same species',
           metrics: formatHitLines(bx.hits).join('\n'),
-          note: 'For cross-species experiments, also read the human blastx block below in this tab.',
+          note: isBlastHumanProteinEnabled()
+            ? 'For cross-species experiments, also read the human protein check block below in this tab.'
+            : 'Enable the human protein check in preferences if you want a human RefSeq comparison.',
           state: bx.hits && bx.hits.length ? undefined : 'err',
         });
         progressLog('BLAST blastx (same species) finished.');
       } catch (e) {
+        if (e.name === 'AbortError') throw e;
         progressLog(`BLAST blastx (species) error: ${e.message || e}`);
         setBlock('blkBlastx', {
           title: 'blastx · RefSeq protein · same species',
@@ -1712,41 +2452,180 @@
         });
       }
       setActiveCheck(null);
+    }
 
-      showStatus('BLAST 3/3: translated CDS vs human RefSeq protein…', 'loading');
-      progressLog('BLAST blastx (human): submitting…');
+    async function runBlastxHumanCheck(ctx, signal = null, blastMeta = null) {
+      const { fastaQuery, fastaProteinQuery, entrezHuman } = ctx;
+      const isTimeoutError = (e) => /\btimeout\b|\btimed out\b|HTTP 504/i.test(String(e?.message || e || ''));
+      const callWithRetry = async (payload, label, maxAttempts) => {
+        let lastErr = null;
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+          if (attempt > 1) progressLog(`${label}: retry ${attempt}/${maxAttempts}…`);
+          try {
+            return await postBlast(payload, signal);
+          } catch (e) {
+            lastErr = e;
+            if (e.name === 'AbortError') throw e;
+            if (!isTimeoutError(e) || attempt >= maxAttempts) throw e;
+            progressLog(`${label}: timeout on attempt ${attempt}; waiting before retry…`);
+            await delay(1500 * attempt, signal);
+          }
+        }
+        throw lastErr || new Error(`${label}: unknown BLAST error`);
+      };
+
+      const n = blastMeta && blastMeta.n ? blastMeta.n : 1;
+      const i = blastMeta && blastMeta.i ? blastMeta.i : 1;
+      showStatus(`${blastStepLabel(i, n)}human protein check (blastp first, fallback to blastx if needed)…`, 'loading');
+      progressLog('BLAST human check: submitting blastp primary…');
       setBlock('blkBlastxHuman', {
-        title: 'blastx · RefSeq protein · human',
-        metrics: 'Submitting…',
-        note: 'Human RefSeq proteins — for non-human CDS you plan to express or compare in human cells.',
+        title: 'human protein check (blastp primary, blastx fallback)',
+        metrics: 'Submitting blastp primary…',
+        note: 'Human RefSeq proteins; blastp on translated ORF is usually faster. blastx fallback is used only when needed.',
         state: 'pending',
       });
       setActiveCheck('blkBlastxHuman');
       try {
-        const bxh = await postBlast({
-          program: 'blastx',
-          database: 'refseq_protein',
-          query: fastaQuery,
-          entrez_query: entrezHuman,
-          hitlist_size: 10,
-        });
+        let bxh = null;
+        let methodLabel = '';
+        if (fastaProteinQuery) {
+          bxh = await callWithRetry(
+            {
+              program: 'blastp',
+              database: 'refseq_protein',
+              query: fastaProteinQuery,
+              entrez_query: entrezHuman,
+              hitlist_size: 10,
+              max_wait_s: 900,
+            },
+            'BLAST blastp (human)',
+            2
+          );
+          methodLabel = 'Completed with blastp.';
+        } else {
+          progressLog('BLAST blastp (human) skipped: no translated ORF query available; using blastx.');
+        }
+
+        if (!bxh) {
+          progressLog('BLAST blastx (human fallback): submitting…');
+          bxh = await callWithRetry(
+            {
+              program: 'blastx',
+              database: 'refseq_protein',
+              query: fastaQuery,
+              entrez_query: entrezHuman,
+              hitlist_size: 10,
+              max_wait_s: 900,
+            },
+            'BLAST blastx (human fallback)',
+            2
+          );
+          methodLabel = 'Completed with blastx fallback.';
+        }
+
         setBlock('blkBlastxHuman', {
-          title: 'blastx · RefSeq protein · human',
+          title: 'human protein check (blastp primary, blastx fallback)',
           metrics: formatHitLines(bxh.hits).join('\n'),
-          note: 'Expect the ortholog / gene family to dominate top hits. Low coverage or distant hits warrant manual review.',
+          note: `${methodLabel} Expect the ortholog / gene family to dominate top hits. Low coverage or distant hits warrant manual review.`,
           state: bxh.hits && bxh.hits.length ? undefined : 'err',
         });
-        progressLog('BLAST blastx (human) finished. All checks done.');
+        progressLog(`BLAST human check finished. ${methodLabel}`);
       } catch (e) {
-        progressLog(`BLAST blastx (human) error: ${e.message || e}`);
+        if (e.name === 'AbortError') throw e;
+        progressLog(`BLAST human check error: ${e.message || e}`);
         setBlock('blkBlastxHuman', {
-          title: 'blastx · RefSeq protein · human',
+          title: 'human protein check (blastp primary, blastx fallback)',
           metrics: String(e.message || e),
           note: '',
           state: 'err',
         });
       }
       setActiveCheck(null);
+    }
+
+    async function retryBlastStep(step) {
+      const ctx = validationBlastContext;
+      if (!ctx || !useLocalServer()) return;
+      const wrap = document.getElementById('validationBlocks');
+      const btn = wrap && wrap.querySelector(`.check-retry-btn[data-blast-step="${step}"]`);
+      if (btn) btn.disabled = true;
+      setChecksRunningHint(true);
+      try {
+        if (step === 'blastn') await runBlastNCheck(ctx);
+        else if (step === 'blastx') await runBlastxSpeciesCheck(ctx);
+        else if (step === 'blastxHuman') await runBlastxHumanCheck(ctx);
+      } finally {
+        setChecksRunningHint(false);
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function runValidation(fasta, geneSymbol, organism, taxid, selectedAccession, signal = null) {
+      setChecksRunningHint(true);
+      try {
+      validationBlastContext = null;
+      progressLog('ORF: scanning reading frame (local)…');
+      buildValidationSkeleton();
+      setActiveCheck('blkOrf');
+      const lines = fasta.split('\n');
+      const sequence = lines.slice(1).join('\n').replace(/\s/g, '');
+      const { seq, nonAgctRemoved } = normalizeDNA(sequence);
+      const nonAtcg = summarizeNonAtcg(sequence);
+      const fastaQuery = `>query_cds_${geneSymbol}\n${sequence}`;
+      const translated = translateCodingDNA(seq);
+      const fastaProteinQuery = translated.aaNoTerminalStop
+        ? `>query_protein_${geneSymbol}\n${translated.aaNoTerminalStop}`
+        : null;
+
+      let orfNote = '';
+      if (nonAgctRemoved) orfNote = `${nonAgctRemoved} non-AGCT character(s) removed before ORF scan. `;
+      orfNote += 'Nuclear genetic code; mitochondrial genes may violate start/stop rules.';
+      if (translated.internalStops) {
+        orfNote += ` Found ${translated.internalStops} internal stop codon(s) in translated ORF.`;
+      }
+      const orf = checkORF(seq);
+      setBlock('blkOrf', {
+        title: 'ORF structure',
+        metrics: [nonAtcg.line, ...orf.lines, ...(orf.notes.length ? ['—', ...orf.notes.map((n) => '• ' + n)] : [])].join('\n') || '(no data)',
+        note: orfNote,
+        state: orf.ok ? undefined : 'err',
+      });
+
+      progressLog('ORF done.');
+      if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+      if (!useLocalServer()) {
+        progressLog('Skipping BLAST: open via http://127.0.0.1:8765 or http://localhost:8765 with server.py');
+        const msg =
+          'BLAST checks need this page at http://127.0.0.1:8765 or http://localhost:8765 with python3 server.py. ORF still ran.';
+        const titles = [['blkBlastn', 'blastn · RefSeq RNA · same species']];
+        if (isBlastxSameSpeciesEnabled()) titles.push(['blkBlastx', 'blastx · RefSeq protein · same species']);
+        if (isBlastHumanProteinEnabled()) {
+          titles.push(['blkBlastxHuman', 'human protein check (blastp primary, blastx fallback)']);
+        }
+        titles.forEach(([id, title]) => {
+          setBlock(id, { title, metrics: msg, note: '', state: 'err' });
+        });
+        setActiveCheck(null);
+        return;
+      }
+
+      const entrezSpecies = taxid != null ? `txid${taxid}[ORGN]` : null;
+      const entrezHuman = `txid${HUMAN_TAXID}[ORGN]`;
+      const blastCtx = { fastaQuery, fastaProteinQuery, entrezSpecies, entrezHuman, selectedAccession };
+      validationBlastContext = blastCtx;
+
+      const blastTotal = countEnabledBlastSteps();
+      let blastI = 0;
+      blastI += 1;
+      await runBlastNCheck(blastCtx, signal, { i: blastI, n: blastTotal });
+      if (isBlastxSameSpeciesEnabled()) {
+        blastI += 1;
+        await runBlastxSpeciesCheck(blastCtx, signal, { i: blastI, n: blastTotal });
+      }
+      if (isBlastHumanProteinEnabled()) {
+        blastI += 1;
+        await runBlastxHumanCheck(blastCtx, signal, { i: blastI, n: blastTotal });
+      }
       } finally {
         setChecksRunningHint(false);
       }
@@ -1758,6 +2637,7 @@
           <span class="results-title">CDS</span>
           <div class="results-actions">
             <button type="button" class="copy-btn" id="copyBtn" disabled>Copy sequence</button>
+            <button type="button" class="copy-btn" id="copySheetsRowBtn" disabled>Copy row for Sheets</button>
             <p class="checks-running-hint" id="checksRunningHint" hidden>(still checking...)</p>
           </div>
         </div>
@@ -1765,6 +2645,21 @@
         <div class="cds-display" style="opacity:0.65">
           <div class="header-line">(loading)</div>
           <div class="sequence">…</div>
+        </div>
+        <div class="sequence-block">
+          <div class="sequence-block-header">
+            <span class="results-title">Protein (one-letter)</span>
+            <button type="button" class="copy-btn" id="copyProteinBtn" disabled>Copy protein</button>
+          </div>
+          <div class="cds-display" style="opacity:0.65"><div class="sequence">…</div></div>
+        </div>
+        <div class="sequence-block">
+          <div class="sequence-block-header">
+            <span class="results-title">Human codon–optimized DNA</span>
+            <button type="button" class="copy-btn" id="copyOptimizedBtn" disabled>Copy DNA</button>
+          </div>
+          <p class="sequence-block-note">Kazusa <i>Homo sapiens</i> frequencies: most-used synonymous codon per amino acid. Loading…</p>
+          <div class="cds-display" style="opacity:0.65"><div class="sequence">…</div></div>
         </div>
       `;
       document.getElementById('validationBlocks').innerHTML = `
@@ -1781,12 +2676,33 @@
       const headerLine = lines[0];
       const sequence = lines.slice(1).join('\n').replace(/\s/g, '');
       const displaySeq = sequence.match(/.{1,70}/g)?.join('\n') || sequence;
+      const uncertaintySheet = uncertaintyForSpreadsheet(sequence);
+      const { seq } = normalizeDNA(sequence);
+      const translated = translateCodingDNA(seq);
+      const proteinOneLetter = translated.aaNoTerminalStop || '';
+      const proteinDisplay =
+        proteinOneLetter.match(/.{1,70}/g)?.join('\n') ||
+        proteinOneLetter ||
+        '(No translatable protein: empty CDS after cleanup, or no valid ORF end.)';
+      const optimizedSeq = humanOptimizeCodingDna(seq);
+      const optimizedDisplay = optimizedSeq.match(/.{1,70}/g)?.join('\n') || optimizedSeq || '(empty)';
+      const lenNote =
+        seq.length % 3 !== 0
+          ? ' CDS length is not a multiple of 3 after removing non-AGCT; translation and optimization use only full trailing codons.'
+          : '';
+      const optNote =
+        `Synonymous codons chosen by highest Kazusa <i>Homo sapiens</i> genomic usage (per-thousand, ~93k CDS). ` +
+        `This matches a common CAI-style rule (frequent host codons) but does not model tRNA pools, ` +
+        `secondary structure, repeat motifs, or cell-type-specific expression.${lenNote}`;
+
       const resultsEl = document.getElementById('results');
       resultsEl.innerHTML = `
         <div class="results-header">
           <span class="results-title">CDS (fasta_cds_na)</span>
           <div class="results-actions">
             <button type="button" class="copy-btn" id="copyBtn">Copy sequence</button>
+            <button type="button" class="copy-btn" id="copySheetsRowBtn"
+              title="Tab-separated row: paste into Google Sheets with one cell selected — fills 5 columns (DNA, length, uncertainty, protein, human-optimized DNA).">Copy row for Sheets</button>
             <p class="checks-running-hint" id="checksRunningHint" hidden>(still checking...)</p>
           </div>
         </div>
@@ -1795,20 +2711,67 @@
           <div class="header-line">${escapeHtml(headerLine)}</div>
           <div class="sequence">${escapeHtml(displaySeq)}</div>
         </div>
+        <div class="sequence-block">
+          <div class="sequence-block-header">
+            <span class="results-title">Protein (one-letter)</span>
+            <button type="button" class="copy-btn" id="copyProteinBtn" ${proteinOneLetter ? '' : 'disabled'}>Copy protein</button>
+          </div>
+          <div class="cds-display">
+            <div class="sequence">${escapeHtml(proteinDisplay)}</div>
+          </div>
+        </div>
+        <div class="sequence-block">
+          <div class="sequence-block-header">
+            <span class="results-title">Human codon–optimized DNA</span>
+            <button type="button" class="copy-btn" id="copyOptimizedBtn" ${optimizedSeq ? '' : 'disabled'}>Copy DNA</button>
+          </div>
+          <p class="sequence-block-note">${optNote}</p>
+          <div class="cds-display">
+            <div class="sequence">${escapeHtml(optimizedDisplay)}</div>
+          </div>
+        </div>
       `;
-      document.getElementById('copyBtn').addEventListener('click', () => {
-        navigator.clipboard.writeText(sequence);
-        const btn = document.getElementById('copyBtn');
+      const flashCopied = (btn) => {
         const orig = btn.textContent;
         btn.textContent = 'Copied!';
         setTimeout(() => { btn.textContent = orig; }, 1500);
+      };
+      const sheetsRow = [
+        tsvCell(sequence),
+        tsvCell(sequence.length),
+        tsvCell(uncertaintySheet),
+        tsvCell(proteinOneLetter),
+        tsvCell(optimizedSeq),
+      ].join('\t');
+
+      document.getElementById('copyBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(sequence);
+        flashCopied(document.getElementById('copyBtn'));
       });
+      document.getElementById('copySheetsRowBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(sheetsRow);
+        flashCopied(document.getElementById('copySheetsRowBtn'));
+      });
+      const copyProt = document.getElementById('copyProteinBtn');
+      if (proteinOneLetter) {
+        copyProt.addEventListener('click', () => {
+          navigator.clipboard.writeText(proteinOneLetter);
+          flashCopied(copyProt);
+        });
+      }
+      const copyOpt = document.getElementById('copyOptimizedBtn');
+      if (optimizedSeq) {
+        copyOpt.addEventListener('click', () => {
+          navigator.clipboard.writeText(optimizedSeq);
+          flashCopied(copyOpt);
+        });
+      }
     }
 
-    async function loadCdsAndValidate() {
+    async function loadCdsAndValidate(signal = null) {
       if (!lastContext) return;
       void ensureAudioContext();
-      setSideTab('progress');
+      setSideTab('checks');
       const { organism, geneSymbol, taxid } = lastContext;
       const picked = getTranscriptSelection();
       if (!picked || !picked.value) throw new Error('No transcript selected.');
@@ -1816,17 +2779,23 @@
       const accession = picked.accession || '';
       setActiveCheck('chkPlaceholder');
       showStatus('Step: Downloading CDS from NCBI (efetch)…', 'loading');
-      const fasta = await fetchFastaCdsNa(nuccoreId);
+      const fasta = await fetchFastaCdsNa(nuccoreId, signal);
+      if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
       showResults(fasta, geneSymbol, organism, accession);
-      showStatus('Step: Running ORF + BLAST (three NCBI jobs — may take several minutes)…', 'loading');
-      await runValidation(fasta, geneSymbol, organism, taxid, accession);
+      const nBlast = countEnabledBlastSteps();
+      showStatus(
+        `Step: Running ORF + BLAST (${ncbiJobCountPhrase(nBlast)} — may take several minutes)…`,
+        'loading'
+      );
+      await runValidation(fasta, geneSymbol, organism, taxid, accession, signal);
       hideStatus();
       setSideTab('checks');
       showStatus('All checks complete', 'success');
       void playChecksDoneSound();
     }
 
-    initSoundControls();
+    initUserPreferences();
+    restoreLastSearchForm();
 
     document.getElementById('transcriptComboBtn').addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1861,6 +2830,8 @@
 
       if (!gene) return;
 
+      saveLastSearchForm(organism, gene);
+
       btn.disabled = true;
       transcriptSelectionToken++;
       closeTranscriptPanel();
@@ -1868,35 +2839,57 @@
       document.getElementById('transcriptField').classList.add('hidden');
       document.getElementById('results').innerHTML = '';
       document.getElementById('validationBlocks').innerHTML = '';
+      /* Progress log lives on the Progress tab; show it during fetch so work is visible immediately. */
       setSideTab('progress');
       progressLogClear();
       progressLog(`Fetch CDS for "${gene}" (${organism})`);
 
+      const signal = startActiveJob();
       try {
+        await paintYield();
         showStatus('Step: Resolving gene and RefSeq transcripts (esearch → elink → esummary)…', 'loading');
-        const geneId = await esearchGene(organism, gene);
-        await delay(300);
-        const links = await elinkRefseqRna(geneId);
-        await delay(300);
-        const transcripts = await esummaryNuccore(links);
+        await yieldToMain(signal);
+        const geneId = await esearchGene(organism, gene, signal);
+        await delay(300, signal);
+        const links = await elinkRefseqRna(geneId, signal);
+        await delay(300, signal);
+        let transcripts = await esummaryNuccore(links, signal);
         if (!transcripts.length) throw new Error('Could not summarize RefSeq RNA records.');
+        await delay(300, signal);
+        transcripts = await prioritizeRefseqSelectTranscripts(transcripts, signal);
 
         lastContext = { geneId, organism, geneSymbol: gene, taxid, transcripts };
+        await yieldToMain(signal);
         fillTranscriptPicker(transcripts);
         showWorkspaceShell(gene, organism);
         showStatus('Transcript list ready. Downloading CDS for the selected NM_…', 'loading');
-        await loadCdsAndValidate();
+        await loadCdsAndValidate(signal);
       } catch (err) {
-        progressLog(`Error: ${err.message || err}`);
-        showStatus(err.message || String(err), 'error');
-        if (!lastContext) {
+        if (err.name === 'AbortError') {
+          progressLog('Stopped by user.');
+          hideStatus();
+          lastContext = null;
           document.getElementById('results').innerHTML = '';
           document.getElementById('validationBlocks').innerHTML = '';
           document.getElementById('transcriptField').classList.add('hidden');
+          validationBlastContext = null;
+        } else {
+          progressLog(`Error: ${err.message || err}`);
+          showStatus(err.message || String(err), 'error');
+          if (!lastContext) {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('validationBlocks').innerHTML = '';
+            document.getElementById('transcriptField').classList.add('hidden');
+          }
         }
       } finally {
+        endActiveJob();
         btn.disabled = false;
       }
+    });
+
+    document.getElementById('stopJobBtn').addEventListener('click', () => {
+      activeJobAbort?.abort();
     });
 
     if (useLocalServer()) {

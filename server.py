@@ -24,7 +24,7 @@ _ssl_ctx.check_hostname = False
 _ssl_ctx.verify_mode = ssl.CERT_NONE
 
 ALLOWED_EUTILS_PREFIX = "https://eutils.ncbi.nlm.nih.gov/"
-ALLOWED_BLAST_PROGRAMS = frozenset({"blastn", "blastx"})
+ALLOWED_BLAST_PROGRAMS = frozenset({"blastn", "blastx", "blastp"})
 ALLOWED_BLAST_DATABASES = frozenset({"refseq_rna", "refseq_protein"})
 
 
@@ -254,6 +254,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         query = (payload.get("query") or "").strip()
         entrez_query = payload.get("entrez_query")
         hitlist_size = int(payload.get("hitlist_size") or 10)
+        max_wait_s = int(payload.get("max_wait_s") or 300)
 
         if program not in ALLOWED_BLAST_PROGRAMS or database not in ALLOWED_BLAST_DATABASES:
             self._send_json(400, {"error": "Unsupported program or database"})
@@ -264,6 +265,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if hitlist_size < 1 or hitlist_size > 50:
             self._send_json(400, {"error": "hitlist_size must be 1–50"})
             return
+        if max_wait_s < 30 or max_wait_s > 1800:
+            self._send_json(400, {"error": "max_wait_s must be 30–1800"})
+            return
 
         try:
             result = run_blast(
@@ -272,6 +276,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 query,
                 entrez_query=entrez_query if entrez_query else None,
                 hitlist_size=hitlist_size,
+                max_wait_s=max_wait_s,
             )
             self._send_json(200, result)
         except TimeoutError as e:
