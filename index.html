@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gene CDS Fetcher</title>
+  <title>CDSeeker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -312,17 +312,106 @@
       display: none;
     }
 
+    .tool-title-wrap {
+      position: relative;
+      width: max-content;
+      max-width: 100%;
+      margin: 0 auto 0.35rem;
+      padding: 0 1rem;
+    }
+
     h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-      letter-spacing: -0.02em;
+      font-size: clamp(2.25rem, 5vw, 4rem);
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.04em;
+      text-align: center;
+      line-height: 1.05;
+      color: var(--text);
+      text-shadow: 0 0 26px rgba(88, 166, 255, 0.2);
     }
 
     .subtitle {
       color: var(--text-muted);
       font-size: 0.9rem;
       margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .name-cycle-btn {
+      position: absolute;
+      bottom: 0.08rem;
+      width: 0.9rem;
+      height: 0.9rem;
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.75;
+    }
+
+    .name-cycle-btn svg {
+      width: 0.7rem;
+      height: 0.7rem;
+      display: block;
+    }
+
+    .name-cycle-btn .tri {
+      fill: transparent;
+      stroke: var(--text-muted);
+      stroke-width: 1.65;
+      transition: fill 0.15s ease, stroke 0.15s ease;
+    }
+
+    .name-cycle-btn:hover .tri {
+      fill: var(--accent);
+      stroke: var(--accent);
+    }
+
+    .name-cycle-btn:hover {
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+      opacity: 1;
+    }
+
+    .name-cycle-btn:active {
+      background: transparent;
+      transform: translateY(1px);
+    }
+
+    .name-cycle-btn:focus,
+    .name-cycle-btn:focus-visible {
+      background: transparent;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .name-cycle-btn.left {
+      left: 0;
+      transform: translateX(-100%);
+    }
+
+    .name-cycle-btn.right {
+      right: 0;
+      transform: translateX(100%);
+    }
+
+    .name-cycle-btn.left:active,
+    .name-cycle-btn.right:active {
+      transform: translateY(1px);
+    }
+
+    .name-cycle-btn.left:active {
+      transform: translateX(-100%) translateY(1px);
+    }
+
+    .name-cycle-btn.right:active {
+      transform: translateX(100%) translateY(1px);
     }
 
     .form {
@@ -344,7 +433,7 @@
       color: var(--text-muted);
     }
 
-    select, input[type="text"] {
+    select, input[type="text"], textarea {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.95rem;
       padding: 0.65rem 0.9rem;
@@ -355,11 +444,11 @@
       transition: border-color 0.15s, box-shadow 0.15s;
     }
 
-    select:hover, input[type="text"]:hover {
+    select:hover, input[type="text"]:hover, textarea:hover {
       border-color: #3d4d66;
     }
 
-    select:focus, input[type="text"]:focus {
+    select:focus, input[type="text"]:focus, textarea:focus {
       outline: none;
       border-color: var(--accent);
       box-shadow: 0 0 0 3px var(--accent-dim);
@@ -516,6 +605,54 @@
       max-width: 52rem;
     }
 
+    .sequence-block-note.alert {
+      color: var(--error);
+      border-left: 3px solid var(--error);
+      padding-left: 0.55rem;
+      font-weight: 600;
+    }
+
+    .results-alert {
+      margin: 0.65rem 0 0.9rem;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid var(--error);
+      border-radius: 8px;
+      color: var(--error);
+      background: color-mix(in srgb, var(--error) 12%, transparent);
+      font-size: 0.84rem;
+      line-height: 1.45;
+      font-weight: 600;
+      max-width: 64rem;
+    }
+
+    .results-alert.success {
+      color: var(--success);
+      border-color: var(--success);
+      background: color-mix(in srgb, var(--success) 14%, transparent);
+    }
+
+    .results-alert.warn {
+      color: #e3b341;
+      border-color: #e3b341;
+      background: color-mix(in srgb, #e3b341 14%, transparent);
+    }
+
+    .ambiguity-protein-card {
+      margin-top: 1rem;
+      padding: 0.75rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--surface) 88%, var(--bg));
+    }
+
+    .ambiguity-protein-card:first-of-type {
+      margin-top: 0.5rem;
+    }
+
+    .ambiguity-protein-card .sequence-block-header {
+      margin-bottom: 0.45rem;
+    }
+
     .status {
       padding: 0.75rem 1rem;
       border-radius: 8px;
@@ -609,6 +746,43 @@
 
     .field.hidden {
       display: none;
+    }
+
+    .inline-text-btn {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 0.86rem;
+      font-weight: 500;
+      padding: 0;
+      margin: -0.45rem 0 0;
+      align-self: flex-start;
+      color: var(--accent);
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      text-decoration: underline;
+      text-underline-offset: 0.15rem;
+    }
+
+    .inline-text-btn:hover {
+      background: transparent;
+      color: #79b8ff;
+      transform: none;
+    }
+
+    .inline-text-btn:active {
+      transform: none;
+    }
+
+    #manualCdsInput {
+      min-height: 7.5rem;
+      resize: vertical;
+    }
+
+    .field-help {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.35;
     }
 
     .transcript-combo {
@@ -937,7 +1111,19 @@
 </head>
 <body>
   <div class="container">
-    <h1>Gene CDS Fetcher</h1>
+    <div class="tool-title-wrap">
+      <button type="button" class="name-cycle-btn left" id="toolNamePrevBtn" aria-label="Previous name option" title="Previous name option">
+        <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+          <polygon class="tri" points="8.5,1.75 2.5,6 8.5,10.25" />
+        </svg>
+      </button>
+      <h1 id="toolTitle">CDSeeker</h1>
+      <button type="button" class="name-cycle-btn right" id="toolNameNextBtn" aria-label="Next name option" title="Next name option">
+        <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+          <polygon class="tri" points="3.5,1.75 9.5,6 3.5,10.25" />
+        </svg>
+      </button>
+    </div>
     <p class="subtitle">Search NCBI for an organism and gene, pick a RefSeq transcript, then retrieve the CDS. Run <code style="font-size:0.85em">python3 server.py</code> for local proxy + BLAST. Layout: CDS on the left; Progress and Checks on the right.</p>
 
     <div id="status"></div>
@@ -988,6 +1174,13 @@
       </div>
 
       <button type="submit" id="searchBtn">Fetch CDS</button>
+      <button type="button" class="inline-text-btn" id="manualCdsToggleBtn" aria-expanded="false" aria-controls="manualCdsField">or input your own CDS</button>
+      <div class="field hidden" id="manualCdsField">
+        <label for="manualCdsInput">Custom CDS sequence</label>
+        <textarea id="manualCdsInput" placeholder="Paste raw CDS sequence or FASTA here"></textarea>
+        <p class="field-help">When provided, this sequence is used instead of downloading CDS from NCBI.</p>
+        <button type="button" id="manualRunBtn" disabled>Run Checks and Conversions</button>
+      </div>
     </form>
 
         <div id="results" class="results"></div>
@@ -1086,6 +1279,38 @@
   </div>
 
   <script>
+    const TOOL_NAME_OPTIONS = Object.freeze([
+      'SeekSeq',
+      'Seq and Ye Shall Find',
+      'SeqSeeker',
+      'SeqScout',
+      'CDScout',
+      'CDSeek',
+      'CDSipher',
+      'GeneSeeker',
+    ]);
+    let toolNameIndex = 0;
+
+    function applyToolName(index) {
+      const titleEl = document.getElementById('toolTitle');
+      if (!titleEl || !TOOL_NAME_OPTIONS.length) return;
+      toolNameIndex = (index + TOOL_NAME_OPTIONS.length) % TOOL_NAME_OPTIONS.length;
+      const name = TOOL_NAME_OPTIONS[toolNameIndex];
+      titleEl.textContent = name;
+      document.title = name;
+    }
+
+    function wireToolNameCycler() {
+      const prevBtn = document.getElementById('toolNamePrevBtn');
+      const nextBtn = document.getElementById('toolNameNextBtn');
+      if (!prevBtn || !nextBtn || !TOOL_NAME_OPTIONS.length) return;
+      prevBtn.addEventListener('click', () => applyToolName(toolNameIndex - 1));
+      nextBtn.addEventListener('click', () => applyToolName(toolNameIndex + 1));
+      applyToolName(0);
+    }
+
+    wireToolNameCycler();
+
     const NCBI_BASE = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils';
     const HUMAN_TAXID = 9606;
     const STOPS = new Set(['TAA', 'TAG', 'TGA']);
@@ -2238,6 +2463,198 @@
     }
 
     /**
+     * IUPAC-IUB DNA ambiguity: each letter expands to the listed concrete bases.
+     * U is treated as T (RNA) before lookup. Matches common NCBI / FASTA usage.
+     * @see https://www.ncbi.nlm.nih.gov/staff/tao/tools/rev_comp_faq.html#iupac
+     */
+    const IUPAC_DNA_TO_BASES = Object.freeze({
+      A: ['A'],
+      C: ['C'],
+      G: ['G'],
+      T: ['T'],
+      R: ['A', 'G'],
+      Y: ['C', 'T'],
+      M: ['A', 'C'],
+      K: ['G', 'T'],
+      S: ['G', 'C'],
+      W: ['A', 'T'],
+      H: ['A', 'C', 'T'],
+      B: ['C', 'G', 'T'],
+      V: ['A', 'C', 'G'],
+      D: ['A', 'G', 'T'],
+      N: ['A', 'C', 'G', 'T'],
+    });
+
+    /** Max Cartesian product of IUPAC branches before refusing enumeration (UI freeze). */
+    const MAX_IUPAC_COMBINATION_PRODUCT = 200000;
+
+    function prepareCdsForIupacLookup(raw) {
+      const seq = String(raw || '')
+        .toUpperCase()
+        .replace(/\s/g, '')
+        .replace(/U/g, 'T');
+      const invalid = new Set();
+      for (let i = 0; i < seq.length; i++) {
+        const ch = seq[i];
+        if (!IUPAC_DNA_TO_BASES[ch]) invalid.add(ch);
+      }
+      if (invalid.size) {
+        const listed = [...invalid].sort().join(', ');
+        return {
+          ok: false,
+          seq: '',
+          message: `Cannot expand ambiguity: invalid character(s) for DNA/IUPAC: ${listed}`,
+        };
+      }
+      return { ok: true, seq, message: '' };
+    }
+
+    function iupacCombinationProduct(seq) {
+      let p = 1;
+      for (let i = 0; i < seq.length; i++) {
+        p *= IUPAC_DNA_TO_BASES[seq[i]].length;
+        if (p > MAX_IUPAC_COMBINATION_PRODUCT) return p;
+      }
+      return p;
+    }
+
+    /**
+     * Enumerate every concrete ATGC sequence implied by IUPAC (depth-first).
+     * Stops once `maxVariants` sequences are collected (then `truncated` is true).
+     */
+    function enumerateIupacConcreteDna(seq, maxVariants = MAX_IUPAC_COMBINATION_PRODUCT) {
+      const indices = [];
+      const choices = [];
+      for (let i = 0; i < seq.length; i++) {
+        const opts = IUPAC_DNA_TO_BASES[seq[i]];
+        if (opts.length > 1) {
+          indices.push(i);
+          choices.push(opts);
+        }
+      }
+      if (indices.length === 0) {
+        return { variants: [seq], truncated: false, totalProduct: 1 };
+      }
+      const totalProduct = choices.reduce((a, o) => a * o.length, 1);
+      const out = [];
+      const buf = [...seq];
+      function dfs(depth) {
+        if (out.length >= maxVariants) return;
+        if (depth === indices.length) {
+          out.push(buf.join(''));
+          return;
+        }
+        const pos = indices[depth];
+        for (const b of choices[depth]) {
+          buf[pos] = b;
+          dfs(depth + 1);
+          if (out.length >= maxVariants) return;
+        }
+      }
+      dfs(0);
+      return {
+        variants: out,
+        truncated: out.length < totalProduct,
+        totalProduct,
+      };
+    }
+
+    /**
+     * Full ambiguity analysis: expand IUPAC, translate each resolution, group by protein (`aa` string).
+     * @returns {object} Used by Results + validation.
+     */
+    function analyzeIupacAmbiguity(rawSequence) {
+      const nonAtcg = summarizeNonAtcg(rawSequence);
+      if (!nonAtcg.hasAny) {
+        const prep = prepareCdsForIupacLookup(rawSequence);
+        if (!prep.ok) {
+          return {
+            kind: 'invalid',
+            nonAtcg,
+            message: prep.message,
+            groups: [],
+            firstConcreteDna: '',
+            blastAaNoStop: '',
+          };
+        }
+        const seq = prep.seq;
+        const t = translateCodingDNA(seq);
+        return {
+          kind: 'none',
+          nonAtcg,
+          message: '',
+          groups: [
+            {
+              aaFull: t.aa,
+              aaNoStop: t.aaNoTerminalStop,
+              exampleDna: seq,
+              nDna: 1,
+            },
+          ],
+          firstConcreteDna: seq,
+          blastAaNoStop: t.aaNoTerminalStop || '',
+        };
+      }
+
+      const prep = prepareCdsForIupacLookup(rawSequence);
+      if (!prep.ok) {
+        return {
+          kind: 'invalid',
+          nonAtcg,
+          message: prep.message,
+          groups: [],
+          firstConcreteDna: '',
+          blastAaNoStop: '',
+        };
+      }
+
+      const product = iupacCombinationProduct(prep.seq);
+      if (product > MAX_IUPAC_COMBINATION_PRODUCT) {
+        return {
+          kind: 'overflow',
+          nonAtcg,
+          message:
+            `Too many IUPAC combinations (${product.toLocaleString()} > ${MAX_IUPAC_COMBINATION_PRODUCT.toLocaleString()}). ` +
+            'Narrow or fix the CDS before enumerating.',
+          groups: [],
+          firstConcreteDna: '',
+          blastAaNoStop: '',
+          combinationProduct: product,
+        };
+      }
+
+      const { variants, truncated, totalProduct } = enumerateIupacConcreteDna(prep.seq);
+      const byAa = new Map();
+      for (const dna of variants) {
+        const tr = translateCodingDNA(dna);
+        const key = tr.aa;
+        if (!byAa.has(key)) {
+          byAa.set(key, { aaFull: tr.aa, aaNoStop: tr.aaNoTerminalStop, exampleDna: dna, nDna: 0 });
+        }
+        byAa.get(key).nDna += 1;
+      }
+      const groups = [...byAa.values()].sort((a, b) => b.nDna - a.nDna || a.aaFull.localeCompare(b.aaFull));
+      const firstConcreteDna = groups[0] ? groups[0].exampleDna : prep.seq;
+      const proteinsIdentical = !truncated && groups.length === 1;
+      const blastAaNoStop = proteinsIdentical ? (groups[0].aaNoStop || '') : '';
+
+      return {
+        kind: 'ambiguous_ok',
+        nonAtcg,
+        message: truncated
+          ? `Enumeration capped at ${variants.length.toLocaleString()} of ${totalProduct.toLocaleString()} resolutions; listed proteins may be incomplete.`
+          : '',
+        groups,
+        variantsEnumerated: variants.length,
+        totalProduct,
+        truncated,
+        proteinsIdentical,
+        firstConcreteDna,
+        blastAaNoStop,
+      };
+    }
+
+    /**
      * RefSeq deflines often include the official gene symbol in parentheses, e.g.
      * "... breast cancer 1 (BRCA1), transcript variant 1, mRNA".
      */
@@ -2571,11 +2988,15 @@
       const sequence = lines.slice(1).join('\n').replace(/\s/g, '');
       const { seq, nonAgctRemoved } = normalizeDNA(sequence);
       const nonAtcg = summarizeNonAtcg(sequence);
+      const iup = analyzeIupacAmbiguity(sequence);
+      const seqOrf = iup.firstConcreteDna && iup.firstConcreteDna.length ? iup.firstConcreteDna : seq;
       const fastaQuery = `>query_cds_${geneSymbol}\n${sequence}`;
-      const translated = translateCodingDNA(seq);
-      const fastaProteinQuery = translated.aaNoTerminalStop
-        ? `>query_protein_${geneSymbol}\n${translated.aaNoTerminalStop}`
-        : null;
+      const translated = translateCodingDNA(seqOrf);
+      const fastaProteinQuery = iup.blastAaNoStop
+        ? `>query_protein_${geneSymbol}\n${iup.blastAaNoStop}`
+        : !nonAtcg.hasAny && translated.aaNoTerminalStop
+          ? `>query_protein_${geneSymbol}\n${translated.aaNoTerminalStop}`
+          : null;
 
       let orfNote = '';
       if (nonAgctRemoved) orfNote = `${nonAgctRemoved} non-AGCT character(s) removed before ORF scan. `;
@@ -2583,12 +3004,25 @@
       if (translated.internalStops) {
         orfNote += ` Found ${translated.internalStops} internal stop codon(s) in translated ORF.`;
       }
-      const orf = checkORF(seq);
+      if (nonAtcg.hasAny) {
+        if (iup.kind === 'invalid') {
+          orfNote += ` ${iup.message}`;
+        } else if (iup.kind === 'overflow') {
+          orfNote += ` ${iup.message}`;
+        } else if (iup.kind === 'ambiguous_ok') {
+          orfNote +=
+            ` IUPAC ambiguity expanded (${iup.variantsEnumerated.toLocaleString()} resolution(s), ` +
+            `${iup.groups.length} distinct protein(s)). ORF metrics use the first enumerated DNA.`;
+          if (iup.truncated && iup.message) orfNote += ` ${iup.message}`;
+        }
+      }
+      const orf = checkORF(seqOrf);
+      const orfHardFail = nonAtcg.hasAny && (iup.kind === 'invalid' || iup.kind === 'overflow');
       setBlock('blkOrf', {
         title: 'ORF structure',
         metrics: [nonAtcg.line, ...orf.lines, ...(orf.notes.length ? ['—', ...orf.notes.map((n) => '• ' + n)] : [])].join('\n') || '(no data)',
         note: orfNote,
-        state: orf.ok ? undefined : 'err',
+        state: orf.ok && !orfHardFail ? undefined : 'err',
       });
 
       progressLog('ORF done.');
@@ -2676,24 +3110,119 @@
       const headerLine = lines[0];
       const sequence = lines.slice(1).join('\n').replace(/\s/g, '');
       const displaySeq = sequence.match(/.{1,70}/g)?.join('\n') || sequence;
+      const nonAtcg = summarizeNonAtcg(sequence);
+      const iup = analyzeIupacAmbiguity(sequence);
       const uncertaintySheet = uncertaintyForSpreadsheet(sequence);
-      const { seq } = normalizeDNA(sequence);
-      const translated = translateCodingDNA(seq);
-      const proteinOneLetter = translated.aaNoTerminalStop || '';
-      const proteinDisplay =
-        proteinOneLetter.match(/.{1,70}/g)?.join('\n') ||
-        proteinOneLetter ||
-        '(No translatable protein: empty CDS after cleanup, or no valid ORF end.)';
-      const optimizedSeq = humanOptimizeCodingDna(seq);
-      const optimizedDisplay = optimizedSeq.match(/.{1,70}/g)?.join('\n') || optimizedSeq || '(empty)';
-      const lenNote =
-        seq.length % 3 !== 0
-          ? ' CDS length is not a multiple of 3 after removing non-AGCT; translation and optimization use only full trailing codons.'
-          : '';
-      const optNote =
-        `Synonymous codons chosen by highest Kazusa <i>Homo sapiens</i> genomic usage (per-thousand, ~93k CDS). ` +
-        `This matches a common CAI-style rule (frequent host codons) but does not model tRNA pools, ` +
-        `secondary structure, repeat motifs, or cell-type-specific expression.${lenNote}`;
+      const seqResolved =
+        iup.firstConcreteDna && iup.firstConcreteDna.length ? iup.firstConcreteDna : normalizeDNA(sequence).seq;
+
+      const wrap70 = (s) => (String(s).match(/.{1,70}/g)?.join('\n') || String(s) || '');
+
+      const invalidAmb = nonAtcg.hasAny && (iup.kind === 'invalid' || iup.kind === 'overflow');
+      const multiProtein =
+        nonAtcg.hasAny &&
+        iup.kind === 'ambiguous_ok' &&
+        !iup.proteinsIdentical &&
+        iup.groups.length > 1;
+
+      let proteinOneLetter = '';
+      let proteinDisplay = '';
+      let proteinExtraHtml = '';
+      let optimizedSeq = '';
+      let optimizedDisplay = '';
+      let optNote = '';
+      let ambiguityBannerHtml = '';
+      let variantProteins = [];
+      let variantOptimizedDna = [];
+
+      if (invalidAmb) {
+        proteinDisplay =
+          '(Unavailable: ambiguity could not be expanded — invalid DNA/IUPAC letters or too many combinations.)';
+        optimizedDisplay = proteinDisplay;
+        optNote = escapeHtml(iup.message || 'Ambiguity resolution failed.');
+        ambiguityBannerHtml = `<p class="results-alert">${escapeHtml(iup.message || 'Ambiguous bases could not be resolved.')}</p>`;
+      } else if (multiProtein) {
+        variantProteins = iup.groups.map((g) => g.aaNoStop || '');
+        variantOptimizedDna = iup.groups.map((g) => humanOptimizeCodingDna(g.exampleDna));
+        proteinExtraHtml =
+          `<p class="sequence-block-note alert">` +
+          `${iup.groups.length} distinct protein sequence(s) from IUPAC expansion ` +
+          `(${iup.variantsEnumerated.toLocaleString()} / ${iup.totalProduct.toLocaleString()} resolutions enumerated).` +
+          `</p>` +
+          iup.groups
+            .map((g, idx) => {
+              const disp = wrap70(g.aaNoStop || '');
+              return `
+          <div class="ambiguity-protein-card">
+            <div class="sequence-block-header">
+              <span class="results-title">Distinct protein ${idx + 1} (${g.nDna.toLocaleString()} DNA resolution(s))</span>
+              <button type="button" class="copy-btn copy-protein-variant-btn" data-copy-protein="${idx}">Copy protein</button>
+            </div>
+            <div class="cds-display"><div class="sequence">${escapeHtml(disp)}</div></div>
+          </div>`;
+            })
+            .join('');
+        optimizedDisplay = iup.groups
+          .map((g, idx) => {
+            const opt = variantOptimizedDna[idx] || '';
+            const od = wrap70(opt) || '(empty)';
+            return `
+          <div class="ambiguity-protein-card">
+            <div class="sequence-block-header">
+              <span class="results-title">Human codon–optimized DNA (protein ${idx + 1})</span>
+              <button type="button" class="copy-btn copy-opt-variant-btn" data-copy-opt="${idx}">Copy DNA</button>
+            </div>
+            <p class="sequence-block-note">Kazusa <i>Homo sapiens</i> frequencies; one representative DNA per protein class.</p>
+            <div class="cds-display"><div class="sequence">${escapeHtml(od)}</div></div>
+          </div>`;
+          })
+          .join('');
+        optNote =
+          `Multiple protein products; each block has its own copy button. ` +
+          (iup.truncated && iup.message ? escapeHtml(iup.message) + ' ' : '') +
+          `Rules: standard IUPAC-IUB DNA letters (NCBI-style); U→T; full Cartesian enumeration up to ${MAX_IUPAC_COMBINATION_PRODUCT.toLocaleString()} combinations.`;
+        ambiguityBannerHtml =
+          `<p class="results-alert warn">Ambiguous bases: ${escapeHtml(nonAtcg.line)}. ` +
+          `${iup.groups.length} unique protein(s) after enumeration.</p>`;
+      } else {
+        const g0 = iup.groups[0] || { aaNoStop: '', exampleDna: seqResolved };
+        proteinOneLetter = g0.aaNoStop || '';
+        proteinDisplay =
+          wrap70(proteinOneLetter) ||
+          '(No translatable protein: empty CDS after cleanup, or no valid ORF end.)';
+        optimizedSeq = humanOptimizeCodingDna(g0.exampleDna || seqResolved);
+        optimizedDisplay = wrap70(optimizedSeq) || '(empty)';
+        const lenNote =
+          seqResolved.length % 3 !== 0
+            ? ' CDS length is not a multiple of 3 after removing non-AGCT; translation and optimization use only full trailing codons.'
+            : '';
+        optNote =
+          `Synonymous codons chosen by highest Kazusa <i>Homo sapiens</i> genomic usage (per-thousand, ~93k CDS). ` +
+          `This matches a common CAI-style rule (frequent host codons) but does not model tRNA pools, ` +
+          `secondary structure, repeat motifs, or cell-type-specific expression.${lenNote}`;
+        if (nonAtcg.hasAny && iup.kind === 'ambiguous_ok' && iup.proteinsIdentical) {
+          const comb = (iup.totalProduct ?? iup.variantsEnumerated).toLocaleString();
+          ambiguityBannerHtml =
+            `<p class="results-alert success">Ambiguity (${escapeHtml(nonAtcg.line)}): all ${comb} enumerated IUPAC resolution(s) ` +
+            `translate to the <strong>same protein</strong> — ambiguity does not change the protein sequence here.</p>`;
+          optNote =
+            `Synonymous codons chosen by highest Kazusa <i>Homo sapiens</i> genomic usage (per-thousand, ~93k CDS). ` +
+            `All enumerated ambiguity resolutions agree on protein sequence.${lenNote}`;
+        } else if (nonAtcg.hasAny && iup.kind === 'ambiguous_ok' && iup.truncated && iup.message) {
+          ambiguityBannerHtml = `<p class="results-alert warn">${escapeHtml(iup.message)}</p>`;
+        }
+      }
+
+      const optNoteClass =
+        invalidAmb || multiProtein ? ' alert' : nonAtcg.hasAny && iup.kind === 'ambiguous_ok' && iup.proteinsIdentical ? '' : '';
+
+      const proteinBodyHtml = multiProtein
+        ? proteinExtraHtml
+        : `<div class="cds-display"><div class="sequence">${escapeHtml(proteinDisplay)}</div></div>`;
+
+      const optimizedBodyHtml = multiProtein
+        ? optimizedDisplay
+        : `<div class="cds-display"><div class="sequence">${escapeHtml(optimizedDisplay)}</div></div>`;
 
       const resultsEl = document.getElementById('results');
       resultsEl.innerHTML = `
@@ -2707,6 +3236,7 @@
           </div>
         </div>
         <p class="meta">${escapeHtml(geneSymbol)} in ${escapeHtml(organism)} · ${sequence.length} bp · ${escapeHtml(selectedAccession || '')}</p>
+        ${ambiguityBannerHtml}
         <div class="cds-display">
           <div class="header-line">${escapeHtml(headerLine)}</div>
           <div class="sequence">${escapeHtml(displaySeq)}</div>
@@ -2714,21 +3244,17 @@
         <div class="sequence-block">
           <div class="sequence-block-header">
             <span class="results-title">Protein (one-letter)</span>
-            <button type="button" class="copy-btn" id="copyProteinBtn" ${proteinOneLetter ? '' : 'disabled'}>Copy protein</button>
+            <button type="button" class="copy-btn" id="copyProteinBtn" ${proteinOneLetter && !multiProtein ? '' : 'disabled'}>Copy protein</button>
           </div>
-          <div class="cds-display">
-            <div class="sequence">${escapeHtml(proteinDisplay)}</div>
-          </div>
+          ${proteinBodyHtml}
         </div>
         <div class="sequence-block">
           <div class="sequence-block-header">
             <span class="results-title">Human codon–optimized DNA</span>
-            <button type="button" class="copy-btn" id="copyOptimizedBtn" ${optimizedSeq ? '' : 'disabled'}>Copy DNA</button>
+            <button type="button" class="copy-btn" id="copyOptimizedBtn" ${optimizedSeq && !multiProtein ? '' : 'disabled'}>Copy DNA</button>
           </div>
-          <p class="sequence-block-note">${optNote}</p>
-          <div class="cds-display">
-            <div class="sequence">${escapeHtml(optimizedDisplay)}</div>
-          </div>
+          <p class="sequence-block-note${optNoteClass}">${optNote}</p>
+          ${optimizedBodyHtml}
         </div>
       `;
       const flashCopied = (btn) => {
@@ -2736,12 +3262,18 @@
         btn.textContent = 'Copied!';
         setTimeout(() => { btn.textContent = orig; }, 1500);
       };
+      const sheetsProteinCell = multiProtein
+        ? variantProteins.map((p, i) => `#${i + 1}:${p}`).join(' | ')
+        : proteinOneLetter;
+      const sheetsOptCell = multiProtein
+        ? variantOptimizedDna.map((d, i) => `#${i + 1}:${d}`).join(' | ')
+        : optimizedSeq;
       const sheetsRow = [
         tsvCell(sequence),
         tsvCell(sequence.length),
         tsvCell(uncertaintySheet),
-        tsvCell(proteinOneLetter),
-        tsvCell(optimizedSeq),
+        tsvCell(sheetsProteinCell),
+        tsvCell(sheetsOptCell),
       ].join('\t');
 
       document.getElementById('copyBtn').addEventListener('click', () => {
@@ -2753,17 +3285,35 @@
         flashCopied(document.getElementById('copySheetsRowBtn'));
       });
       const copyProt = document.getElementById('copyProteinBtn');
-      if (proteinOneLetter) {
+      if (proteinOneLetter && !multiProtein) {
         copyProt.addEventListener('click', () => {
           navigator.clipboard.writeText(proteinOneLetter);
           flashCopied(copyProt);
         });
       }
       const copyOpt = document.getElementById('copyOptimizedBtn');
-      if (optimizedSeq) {
+      if (optimizedSeq && !multiProtein) {
         copyOpt.addEventListener('click', () => {
           navigator.clipboard.writeText(optimizedSeq);
           flashCopied(copyOpt);
+        });
+      }
+      if (multiProtein) {
+        document.querySelectorAll('.copy-protein-variant-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.getAttribute('data-copy-protein') || '-1', 10);
+            const txt = variantProteins[idx] || '';
+            navigator.clipboard.writeText(txt);
+            flashCopied(btn);
+          });
+        });
+        document.querySelectorAll('.copy-opt-variant-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.getAttribute('data-copy-opt') || '-1', 10);
+            const txt = variantOptimizedDna[idx] || '';
+            navigator.clipboard.writeText(txt);
+            flashCopied(btn);
+          });
         });
       }
     }
@@ -2794,8 +3344,114 @@
       void playChecksDoneSound();
     }
 
+    function makeFastaFromManualInput(rawInput, geneSymbol, organism) {
+      const text = String(rawInput || '').trim();
+      if (!text) throw new Error('Custom CDS is empty.');
+      let header = `>custom_cds_${geneSymbol || 'query'} | ${organism || 'unspecified organism'}`;
+      let sequence = text;
+      if (text.startsWith('>')) {
+        const lines = text.split(/\r?\n/);
+        header = lines[0].trim() || header;
+        sequence = lines.slice(1).join('');
+      }
+      sequence = sequence.replace(/\s/g, '');
+      if (!sequence) throw new Error('Custom CDS has no sequence characters.');
+      return `${header}\n${sequence}`;
+    }
+
+    async function runManualCdsAndValidate({ organism, gene, taxid, manualCdsRaw, signal }) {
+      await paintYield();
+      showWorkspaceShell(gene, organism);
+      showStatus('Step: Using custom CDS input…', 'loading');
+      progressLog('Manual CDS mode: using textbox input instead of NCBI fetch.');
+      const manualFasta = makeFastaFromManualInput(manualCdsRaw, gene, organism);
+      if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+      showResults(manualFasta, gene, organism, 'custom input');
+      const nBlast = countEnabledBlastSteps();
+      showStatus(
+        `Step: Running ORF + BLAST (${ncbiJobCountPhrase(nBlast)} — may take several minutes)…`,
+        'loading'
+      );
+      await runValidation(manualFasta, gene, organism, taxid, 'custom input', signal);
+      hideStatus();
+      setSideTab('checks');
+      showStatus('All checks complete', 'success');
+      void playChecksDoneSound();
+    }
+
     initUserPreferences();
     restoreLastSearchForm();
+    const searchForm = document.getElementById('searchForm');
+    const searchBtn = document.getElementById('searchBtn');
+    const manualCdsToggleBtn = document.getElementById('manualCdsToggleBtn');
+    const manualCdsField = document.getElementById('manualCdsField');
+    const manualCdsInput = document.getElementById('manualCdsInput');
+    const manualRunBtn = document.getElementById('manualRunBtn');
+    const updateManualRunButtonState = () => {
+      if (!manualRunBtn) return;
+      const hasManualInput = !!(manualCdsInput?.value || '').trim();
+      manualRunBtn.disabled = !hasManualInput;
+    };
+    const setManualCdsVisible = (on) => {
+      if (!manualCdsToggleBtn || !manualCdsField) return;
+      manualCdsField.classList.toggle('hidden', !on);
+      manualCdsToggleBtn.setAttribute('aria-expanded', on ? 'true' : 'false');
+      if (on) {
+        manualCdsInput?.focus();
+        updateManualRunButtonState();
+      }
+    };
+    manualCdsToggleBtn?.addEventListener('click', () => {
+      const willShow = manualCdsField?.classList.contains('hidden');
+      setManualCdsVisible(!!willShow);
+    });
+    manualCdsInput?.addEventListener('input', updateManualRunButtonState);
+    updateManualRunButtonState();
+
+    manualRunBtn?.addEventListener('click', async () => {
+      if (!searchForm || !searchForm.reportValidity()) return;
+      void ensureAudioContext();
+      const organism = document.getElementById('organism').value;
+      const gene = document.getElementById('gene').value.trim();
+      const taxid = selectedTaxid();
+      const manualCdsRaw = (manualCdsInput?.value || '').trim();
+      if (!manualCdsRaw) return;
+
+      saveLastSearchForm(organism, gene);
+      searchBtn.disabled = true;
+      manualRunBtn.disabled = true;
+      transcriptSelectionToken++;
+      closeTranscriptPanel();
+      lastContext = null;
+      document.getElementById('transcriptField').classList.add('hidden');
+      document.getElementById('results').innerHTML = '';
+      document.getElementById('validationBlocks').innerHTML = '';
+      setSideTab('progress');
+      progressLogClear();
+      progressLog(`Run checks from custom CDS for "${gene}" (${organism})`);
+
+      const signal = startActiveJob();
+      try {
+        await runManualCdsAndValidate({ organism, gene, taxid, manualCdsRaw, signal });
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          progressLog('Stopped by user.');
+          hideStatus();
+          lastContext = null;
+          document.getElementById('results').innerHTML = '';
+          document.getElementById('validationBlocks').innerHTML = '';
+          document.getElementById('transcriptField').classList.add('hidden');
+          validationBlastContext = null;
+        } else {
+          progressLog(`Error: ${err.message || err}`);
+          showStatus(err.message || String(err), 'error');
+        }
+      } finally {
+        endActiveJob();
+        searchBtn.disabled = false;
+        updateManualRunButtonState();
+      }
+    });
 
     document.getElementById('transcriptComboBtn').addEventListener('click', (e) => {
       e.stopPropagation();
@@ -2820,19 +3476,19 @@
       if (transcriptPanelOpen) positionTranscriptPanel();
     });
 
-    document.getElementById('searchForm').addEventListener('submit', async (e) => {
+    searchForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       void ensureAudioContext();
       const organism = document.getElementById('organism').value;
       const gene = document.getElementById('gene').value.trim();
-      const btn = document.getElementById('searchBtn');
       const taxid = selectedTaxid();
 
       if (!gene) return;
 
       saveLastSearchForm(organism, gene);
 
-      btn.disabled = true;
+      searchBtn.disabled = true;
+      if (manualRunBtn) manualRunBtn.disabled = true;
       transcriptSelectionToken++;
       closeTranscriptPanel();
       lastContext = null;
@@ -2884,7 +3540,8 @@
         }
       } finally {
         endActiveJob();
-        btn.disabled = false;
+        searchBtn.disabled = false;
+        updateManualRunButtonState();
       }
     });
 
