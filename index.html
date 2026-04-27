@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GeneSeeker</title>
+  <title>Gene Seeker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -354,7 +354,7 @@
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
-      margin-bottom: 50px;
+      margin-bottom: 17px;
     }
 
     .field {
@@ -1016,6 +1016,11 @@
       color: var(--error);
     }
 
+    .check-block.attn .metrics,
+    .check-block.attn .note {
+      color: var(--error);
+    }
+
     .check-retry-btn {
       margin-top: 0.55rem;
       font-family: 'DM Sans', system-ui, sans-serif;
@@ -1108,7 +1113,7 @@
       </div>
 
       <div class="field hidden" id="transcriptField">
-        <label for="transcriptComboBtn">RefSeq transcript (NM_)</label>
+        <label for="transcriptComboBtn">RefSeq transcript (NM_/XM_ preferred)</label>
         <div class="transcript-combo" id="transcriptComboRoot">
           <button type="button" class="transcript-combo-btn" id="transcriptComboBtn" aria-expanded="false" aria-haspopup="listbox" aria-controls="transcriptList">
             <span class="transcript-combo-value" id="transcriptComboValue">—</span>
@@ -2222,6 +2227,19 @@
       );
     }
 
+    /**
+     * CDS workflow usually expects coding transcripts first.
+     * NM_/XM_ (mRNA) are preferred over NR_/XR_ (non-coding RNAs).
+     */
+    function transcriptAccessionClassRank(accession) {
+      const a = String(accession || '').toUpperCase();
+      if (a.startsWith('NM_')) return 0;
+      if (a.startsWith('XM_')) return 1;
+      if (a.startsWith('NR_')) return 2;
+      if (a.startsWith('XR_')) return 3;
+      return 4;
+    }
+
     async function fetchRefseqSelectFlagsFromGenbank(ids, signal = null) {
       const flags = new Map();
       const chunkSize = 25;
@@ -2257,22 +2275,33 @@
 
     async function prioritizeRefseqSelectTranscripts(transcripts, signal = null) {
       if (!transcripts.length) return transcripts;
+      const rankAndSort = (flags = null) => {
+        const keyed = transcripts.map((t, i) => ({
+          t,
+          i,
+          sel: !!(flags && flags.get(String(t.id))),
+          cls: transcriptAccessionClassRank(t.accession),
+        }));
+        keyed.sort((a, b) => {
+          if (a.sel !== b.sel) return a.sel ? -1 : 1;
+          if (a.cls !== b.cls) return a.cls - b.cls;
+          return a.i - b.i;
+        });
+        return keyed;
+      };
       try {
         progressLog('NCBI efetch: checking GenBank KEYWORDS for RefSeq Select / MANE Select…');
         const flags = await fetchRefseqSelectFlagsFromGenbank(transcripts.map((t) => t.id), signal);
-        const keyed = transcripts.map((t, i) => ({ t, i, sel: !!flags.get(String(t.id)) }));
-        keyed.sort((a, b) => {
-          if (a.sel === b.sel) return a.i - b.i;
-          return a.sel ? -1 : 1;
-        });
+        const keyed = rankAndSort(flags);
         const nSel = keyed.filter((x) => x.sel).length;
         if (nSel) {
           progressLog(
             `${nSel} transcript(s) tagged RefSeq Select or MANE Select — those are listed first (default choice).`
           );
         } else {
-          progressLog('No RefSeq Select / MANE Select keywords found; transcript order unchanged from NCBI elink.');
+          progressLog('No RefSeq Select / MANE Select keywords found; default now favors coding RefSeq mRNAs (NM_/XM_).');
         }
+        progressLog('Transcript rank policy: NM_ > XM_ > NR_ > XR_ > others (within each Select/non-Select group).');
         keyed.forEach((x) => {
           x.t.isRefseqSelect = x.sel;
         });
@@ -2280,10 +2309,12 @@
       } catch (e) {
         if (e.name === 'AbortError') throw e;
         progressLog(`RefSeq Select ordering skipped: ${e.message || e}`);
-        transcripts.forEach((t) => {
-          t.isRefseqSelect = false;
+        progressLog('Applying fallback transcript ranking: NM_ > XM_ > NR_ > XR_ > others.');
+        const keyed = rankAndSort(null);
+        keyed.forEach((x) => {
+          x.t.isRefseqSelect = false;
         });
-        return transcripts;
+        return keyed.map((x) => x.t);
       }
     }
 
@@ -2298,7 +2329,7 @@
         progressLog('efetch OK — FASTA CDS received');
         return text.trim();
       }
-      throw new Error('No CDS (fasta_cds_na) for this transcript — try another NM_ in the list.');
+      throw new Error('No CDS (fasta_cds_na) for this transcript — try another transcript in the list (prefer NM_/XM_).');
     }
 
     function normalizeDNA(raw) {
@@ -2336,20 +2367,35 @@
 
     function checkORF(seq) {
       const notes = [];
+      const flags = {
+        nonTripletLength: false,
+        badStart: false,
+        nonTagStop: false,
+      };
       const len = seq.length;
       if (len === 0) {
         notes.push('Empty sequence after removing non-AGCT characters.');
-        return { ok: false, lines: ['(no ORF checks possible)'], notes };
+        return { ok: false, lines: ['(no ORF checks possible)'], notes, flags };
       }
-      if (len % 3 !== 0) notes.push(`Length ${len} is not a multiple of 3 (codon structure).`);
+      if (len % 3 !== 0) {
+        flags.nonTripletLength = true;
+        notes.push(`Length ${len} is not a multiple of 3 (codon structure).`);
+      }
       const codons = [];
       for (let i = 0; i + 3 <= len; i += 3) codons.push(seq.slice(i, i + 3));
       if (codons.length === 0) {
         notes.push('Sequence too short to form codons.');
-        return { ok: false, lines: [], notes };
+        return { ok: false, lines: [], notes, flags };
       }
-      if (codons[0] !== 'ATG') notes.push(`First codon is ${codons[0]}, not ATG (standard nuclear code).`);
+      if (codons[0] !== 'ATG') {
+        flags.badStart = true;
+        notes.push(`First codon is ${codons[0]}, not ATG (standard nuclear code).`);
+      }
       const last = codons[codons.length - 1];
+      if (last !== 'TAG') {
+        flags.nonTagStop = true;
+        notes.push(`Last codon is ${last}, not TAG.`);
+      }
       if (!STOPS.has(last)) notes.push(`Last codon is ${last}, not a stop (TAA/TAG/TGA).`);
       let internalStops = 0;
       for (let j = 1; j < codons.length - 1; j++) {
@@ -2361,7 +2407,7 @@
         `Codons: ${codons.length}`,
         `Start: ${codons[0]} | Stop: ${last}`,
       ];
-      return { ok: notes.length === 0, lines, notes };
+      return { ok: notes.length === 0, lines, notes, flags };
     }
 
     function translateCodingDNA(seq) {
@@ -2599,6 +2645,13 @@
       return fallback;
     }
 
+    function normalizeGeneToken(s) {
+      return String(s || '')
+        .trim()
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, '');
+    }
+
     /** BLAST JSON2 maps the web "Description" column to description[0].title (full RefSeq defline). */
     function formatHitLines(hits, max = 5) {
       if (!hits || !hits.length) return ['(no hits)'];
@@ -2654,9 +2707,10 @@
     function setBlock(id, { title, metrics, note, state }) {
       const el = document.getElementById(id);
       if (!el) return;
-      el.classList.remove('pending', 'err');
+      el.classList.remove('pending', 'err', 'attn');
       if (state === 'pending') el.classList.add('pending');
       if (state === 'err') el.classList.add('err');
+      if (state === 'attn') el.classList.add('attn');
       el.querySelector('h3').textContent = title;
       el.querySelector('.metrics').textContent = metrics;
       const ne = el.querySelector('.note');
@@ -2691,7 +2745,7 @@
     }
 
     async function runBlastNCheck(ctx, signal = null, blastMeta = null) {
-      const { fastaQuery, entrezSpecies, selectedAccession } = ctx;
+      const { fastaQuery, entrezSpecies, selectedAccession, geneSymbol } = ctx;
       const n = blastMeta && blastMeta.n ? blastMeta.n : 1;
       const i = blastMeta && blastMeta.i ? blastMeta.i : 1;
       showStatus(`${blastStepLabel(i, n)}nucleotide vs RefSeq RNA (same species) — often 30s–3 min…`, 'loading');
@@ -2716,18 +2770,27 @@
         );
         const linesH = formatHitLines(bn.hits);
         let note =
-          'Top hits are RefSeq RNAs. Compare accessions to your chosen NM_. High identity + high query coverage usually mean the fetch matches that transcript class.';
+          'Top hits are RefSeq RNAs. Compare accessions to your selected transcript. High identity + high query coverage usually mean the fetch matches that transcript class.';
         if (bn.hits && bn.hits[0] && selectedAccession) {
           const top = accBase(bn.hits[0].accession);
           const sel = accBase(selectedAccession);
           if (top && sel && top === sel) note += ' Top hit accession matches the selected transcript (base accession).';
           else if (top && sel) note += ` Top hit (${top}) differs from selected (${sel}) — review isoforms/paralogs.`;
         }
+        let geneNameMismatch = false;
+        if (bn.hits && bn.hits[0] && geneSymbol) {
+          const topGene = geneFromBlastTitle(bn.hits[0].title || '');
+          const inputGene = String(geneSymbol || '').trim();
+          if (topGene && normalizeGeneToken(topGene) !== normalizeGeneToken(inputGene)) {
+            geneNameMismatch = true;
+            note += ` Top hit gene (${topGene}) differs from your input gene (${inputGene}).`;
+          }
+        }
         setBlock('blkBlastn', {
           title: 'blastn · RefSeq RNA · same species',
           metrics: linesH.join('\n'),
           note,
-          state: bn.hits && bn.hits.length ? undefined : 'err',
+          state: !(bn.hits && bn.hits.length) ? 'err' : (geneNameMismatch ? 'attn' : undefined),
         });
         progressLog('BLAST blastn finished.');
       } catch (e) {
@@ -2936,11 +2999,16 @@
       }
       const orf = checkORF(seqOrf);
       const orfHardFail = nonAtcg.hasAny && (iup.kind === 'invalid' || iup.kind === 'overflow');
+      const orfAttention =
+        nonAtcg.hasAny ||
+        orf.flags.nonTripletLength ||
+        orf.flags.badStart ||
+        orf.flags.nonTagStop;
       setBlock('blkOrf', {
         title: 'ORF structure',
         metrics: [nonAtcg.line, ...orf.lines, ...(orf.notes.length ? ['—', ...orf.notes.map((n) => '• ' + n)] : [])].join('\n') || '(no data)',
         note: orfNote,
-        state: orf.ok && !orfHardFail ? undefined : 'err',
+        state: orfHardFail ? 'err' : (orfAttention ? 'attn' : (!orf.ok ? 'err' : undefined)),
       });
 
       progressLog('ORF done.');
@@ -2963,7 +3031,7 @@
 
       const entrezSpecies = taxid != null ? `txid${taxid}[ORGN]` : null;
       const entrezHuman = `txid${HUMAN_TAXID}[ORGN]`;
-      const blastCtx = { fastaQuery, fastaProteinQuery, entrezSpecies, entrezHuman, selectedAccession };
+      const blastCtx = { fastaQuery, fastaProteinQuery, entrezSpecies, entrezHuman, selectedAccession, geneSymbol };
       validationBlastContext = blastCtx;
 
       const blastTotal = countEnabledBlastSteps();
@@ -3447,7 +3515,7 @@
         await yieldToMain(signal);
         fillTranscriptPicker(transcripts);
         showWorkspaceShell(gene, organism);
-        showStatus('Transcript list ready. Downloading CDS for the selected NM_…', 'loading');
+        showStatus('Transcript list ready. Downloading CDS for the selected transcript…', 'loading');
         await loadCdsAndValidate(signal);
       } catch (err) {
         if (err.name === 'AbortError') {
