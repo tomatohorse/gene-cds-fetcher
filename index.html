@@ -993,6 +993,12 @@
       letter-spacing: 0.04em;
     }
 
+    .check-block .check-banner {
+      font-size: 0.8rem;
+      line-height: 1.45;
+      margin: 0 0 0.45rem;
+    }
+
     .check-block .metrics {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.72rem;
@@ -1016,8 +1022,7 @@
       color: var(--error);
     }
 
-    .check-block.attn .metrics,
-    .check-block.attn .note {
+    .check-block .attn-line {
       color: var(--error);
     }
 
@@ -2333,10 +2338,10 @@
     }
 
     function normalizeDNA(raw) {
-      const upper = raw.toUpperCase().replace(/\s/g, '').replace(/U/g, 'T');
-      const stripped = upper.replace(/[ACGT]/g, '').length;
-      const seq = upper.replace(/[^ACGT]/g, '');
-      return { seq, nonAgctRemoved: stripped };
+      return String(raw || '')
+        .toUpperCase()
+        .replace(/\s/g, '')
+        .replace(/U/g, 'T');
     }
 
     /** One spreadsheet cell on a TSV row: no tabs or line breaks (would break multi-column paste). */
@@ -2370,11 +2375,11 @@
       const flags = {
         nonTripletLength: false,
         badStart: false,
-        nonTagStop: false,
+        invalidStop: false,
       };
       const len = seq.length;
       if (len === 0) {
-        notes.push('Empty sequence after removing non-AGCT characters.');
+        notes.push('Empty sequence.');
         return { ok: false, lines: ['(no ORF checks possible)'], notes, flags };
       }
       if (len % 3 !== 0) {
@@ -2392,11 +2397,10 @@
         notes.push(`First codon is ${codons[0]}, not ATG (standard nuclear code).`);
       }
       const last = codons[codons.length - 1];
-      if (last !== 'TAG') {
-        flags.nonTagStop = true;
-        notes.push(`Last codon is ${last}, not TAG.`);
+      if (!STOPS.has(last)) {
+        flags.invalidStop = true;
+        notes.push(`Last codon is ${last}, not a stop (TAA/TAG/TGA).`);
       }
-      if (!STOPS.has(last)) notes.push(`Last codon is ${last}, not a stop (TAA/TAG/TGA).`);
       let internalStops = 0;
       for (let j = 1; j < codons.length - 1; j++) {
         if (STOPS.has(codons[j])) internalStops++;
@@ -2704,7 +2708,7 @@
       return data;
     }
 
-    function setBlock(id, { title, metrics, note, state }) {
+    function setBlock(id, { title, metrics, metricsHtml, note, noteHtml, state, bannerHtml }) {
       const el = document.getElementById(id);
       if (!el) return;
       el.classList.remove('pending', 'err', 'attn');
@@ -2712,9 +2716,22 @@
       if (state === 'err') el.classList.add('err');
       if (state === 'attn') el.classList.add('attn');
       el.querySelector('h3').textContent = title;
-      el.querySelector('.metrics').textContent = metrics;
+      const bannerEl = el.querySelector('.check-banner');
+      if (bannerEl) {
+        if (bannerHtml) {
+          bannerEl.innerHTML = bannerHtml;
+          bannerEl.removeAttribute('hidden');
+        } else {
+          bannerEl.innerHTML = '';
+          bannerEl.setAttribute('hidden', '');
+        }
+      }
+      const metricsEl = el.querySelector('.metrics');
+      if (metricsHtml != null) metricsEl.innerHTML = metricsHtml;
+      else metricsEl.textContent = metrics;
       const ne = el.querySelector('.note');
-      ne.textContent = note || '';
+      if (noteHtml != null) ne.innerHTML = noteHtml;
+      else ne.textContent = note || '';
       const retryBtn = el.querySelector('.check-retry-btn');
       if (retryBtn) {
         const show = state === 'err' && validationBlastContext && useLocalServer();
@@ -2739,7 +2756,7 @@
             blastStep != null
               ? `<button type="button" class="check-retry-btn" hidden data-blast-step="${blastStep}">Retry This BLAST</button>`
               : '';
-          return `<div class="check-block pending" id="${id}"><h3>${escapeHtml(t)}</h3><div class="metrics">…</div><p class="note"></p>${retry}</div>`;
+          return `<div class="check-block pending" id="${id}"><h3>${escapeHtml(t)}</h3><div class="check-banner" hidden></div><div class="metrics">…</div><p class="note"></p>${retry}</div>`;
         })
         .join('');
     }
@@ -2778,18 +2795,22 @@
           else if (top && sel) note += ` Top hit (${top}) differs from selected (${sel}) — review isoforms/paralogs.`;
         }
         let geneNameMismatch = false;
+        let mismatchLine = '';
         if (bn.hits && bn.hits[0] && geneSymbol) {
           const topGene = geneFromBlastTitle(bn.hits[0].title || '');
           const inputGene = String(geneSymbol || '').trim();
           if (topGene && normalizeGeneToken(topGene) !== normalizeGeneToken(inputGene)) {
             geneNameMismatch = true;
-            note += ` Top hit gene (${topGene}) differs from your input gene (${inputGene}).`;
+            mismatchLine = `Top hit gene (${topGene}) differs from your input gene (${inputGene}).`;
           }
         }
         setBlock('blkBlastn', {
           title: 'blastn · RefSeq RNA · same species',
           metrics: linesH.join('\n'),
           note,
+          bannerHtml: geneNameMismatch
+            ? `<span class="attn-line">${escapeHtml(mismatchLine)}</span>`
+            : undefined,
           state: !(bn.hits && bn.hits.length) ? 'err' : (geneNameMismatch ? 'attn' : undefined),
         });
         progressLog('BLAST blastn finished.');
@@ -2967,10 +2988,9 @@
       setActiveCheck('blkOrf');
       const lines = fasta.split('\n');
       const sequence = lines.slice(1).join('\n').replace(/\s/g, '');
-      const { seq, nonAgctRemoved } = normalizeDNA(sequence);
       const nonAtcg = summarizeNonAtcg(sequence);
       const iup = analyzeIupacAmbiguity(sequence);
-      const seqOrf = iup.firstConcreteDna && iup.firstConcreteDna.length ? iup.firstConcreteDna : seq;
+      const seqOrf = normalizeDNA(sequence);
       const fastaQuery = `>query_cds_${geneSymbol}\n${sequence}`;
       const translated = translateCodingDNA(seqOrf);
       const fastaProteinQuery = iup.blastAaNoStop
@@ -2980,8 +3000,7 @@
           : null;
 
       let orfNote = '';
-      if (nonAgctRemoved) orfNote = `${nonAgctRemoved} non-AGCT character(s) removed before ORF scan. `;
-      orfNote += 'Nuclear genetic code; mitochondrial genes may violate start/stop rules.';
+      orfNote = 'Nuclear genetic code; mitochondrial genes may violate start/stop rules.';
       if (translated.internalStops) {
         orfNote += ` Found ${translated.internalStops} internal stop codon(s) in translated ORF.`;
       }
@@ -3003,12 +3022,39 @@
         nonAtcg.hasAny ||
         orf.flags.nonTripletLength ||
         orf.flags.badStart ||
-        orf.flags.nonTagStop;
+        orf.flags.invalidStop ||
+        orf.notes.length > 0;
+      const orfMetricsLines = [];
+      orfMetricsLines.push(
+        nonAtcg.hasAny ? `<span class="attn-line">${escapeHtml(nonAtcg.line)}</span>` : escapeHtml(nonAtcg.line)
+      );
+      if (orf.lines[0]) {
+        orfMetricsLines.push(
+          orf.flags.nonTripletLength
+            ? `<span class="attn-line">${escapeHtml(orf.lines[0])}</span>`
+            : escapeHtml(orf.lines[0])
+        );
+      }
+      if (orf.lines[1]) orfMetricsLines.push(escapeHtml(orf.lines[1]));
+      if (orf.lines[2]) {
+        orfMetricsLines.push(
+          orf.flags.badStart || orf.flags.invalidStop
+            ? `<span class="attn-line">${escapeHtml(orf.lines[2])}</span>`
+            : escapeHtml(orf.lines[2])
+        );
+      }
+      if (orf.notes.length) {
+        orfMetricsLines.push('—');
+        for (const n of orf.notes) {
+          orfMetricsLines.push(`<span class="attn-line">${escapeHtml('• ' + n)}</span>`);
+        }
+      }
       setBlock('blkOrf', {
         title: 'ORF structure',
-        metrics: [nonAtcg.line, ...orf.lines, ...(orf.notes.length ? ['—', ...orf.notes.map((n) => '• ' + n)] : [])].join('\n') || '(no data)',
+        metrics: '(no data)',
+        metricsHtml: orfMetricsLines.length ? orfMetricsLines.join('<br>') : '(no data)',
         note: orfNote,
-        state: orfHardFail ? 'err' : (orfAttention ? 'attn' : (!orf.ok ? 'err' : undefined)),
+        state: orfHardFail ? 'err' : (orfAttention ? 'attn' : undefined),
       });
 
       progressLog('ORF done.');
@@ -3102,7 +3148,7 @@
       const iup = analyzeIupacAmbiguity(sequence);
       const uncertaintySheet = uncertaintyForSpreadsheet(sequence);
       const seqResolved =
-        iup.firstConcreteDna && iup.firstConcreteDna.length ? iup.firstConcreteDna : normalizeDNA(sequence).seq;
+        iup.firstConcreteDna && iup.firstConcreteDna.length ? iup.firstConcreteDna : normalizeDNA(sequence);
 
       const wrap70 = (s) => (String(s).match(/.{1,70}/g)?.join('\n') || String(s) || '');
 
@@ -3183,7 +3229,7 @@
         optimizedDisplay = wrap70(optimizedSeq) || '(empty)';
         const lenNote =
           seqResolved.length % 3 !== 0
-            ? ' CDS length is not a multiple of 3 after removing non-AGCT; translation and optimization use only full trailing codons.'
+            ? ' CDS length is not a multiple of 3; translation and optimization use only full codons.'
             : '';
         optNote =
           `Synonymous codons chosen by highest Kazusa <i>Homo sapiens</i> genomic usage (per-thousand, ~93k CDS). ` +
