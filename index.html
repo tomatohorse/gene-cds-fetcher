@@ -2200,26 +2200,89 @@
     }
 
     async function esearchGene(organism, geneSymbol, signal = null) {
+      const requestedSymbol = String(geneSymbol || '').trim();
+      const requestedUpper = requestedSymbol.toUpperCase();
+      if (!requestedSymbol) throw new Error('Gene symbol is required.');
+
       progressLog('NCBI esearch (gene): looking up symbol + organism…');
-      const searchUrl = `${NCBI_BASE}/esearch.fcgi?db=gene&term=${encodeURIComponent(geneSymbol + '[Gene] AND ' + organism + '[orgn]')}&retmode=json`;
-      const searchData = await withNcbiRetry('NCBI esearch', async () => {
-        const searchRes = await ncbiFetch(searchUrl, 120000, signal);
-        if (!searchRes.ok) {
-          const err = new Error(`esearch failed: HTTP ${searchRes.status}`);
-          err.status = searchRes.status;
+      const terms = [
+        `"${requestedSymbol}"[sym] AND ${organism}[orgn]`,
+        `${requestedSymbol}[Gene] AND ${organism}[orgn]`,
+      ];
+      let candidateIds = [];
+      for (let i = 0; i < terms.length; i++) {
+        const term = terms[i];
+        const searchUrl = `${NCBI_BASE}/esearch.fcgi?db=gene&term=${encodeURIComponent(term)}&retmax=30&retmode=json`;
+        const searchData = await withNcbiRetry('NCBI esearch', async () => {
+          const searchRes = await ncbiFetch(searchUrl, 120000, signal);
+          if (!searchRes.ok) {
+            const err = new Error(`esearch failed: HTTP ${searchRes.status}`);
+            err.status = searchRes.status;
+            throw err;
+          }
+          const data = await ncbiReadJson(searchRes, signal);
+          if (data?.esearchresult?.ERROR) throw new Error(`NCBI esearch: ${data.esearchresult.ERROR}`);
+          return data;
+        }, signal);
+        const idList = searchData?.esearchresult?.idlist;
+        if (idList && idList.length) {
+          candidateIds = idList;
+          break;
+        }
+        if (i === 0) progressLog(`No strict [sym] hits for "${requestedSymbol}" — trying broader Gene search…`);
+      }
+      if (!candidateIds.length) {
+        throw new Error(`No gene found for "${requestedSymbol}" in ${organism}.`);
+      }
+
+      const summaryUrl = `${NCBI_BASE}/esummary.fcgi?db=gene&id=${candidateIds.join(',')}&retmode=json`;
+      const summaryData = await withNcbiRetry('NCBI esummary (gene)', async () => {
+        const res = await ncbiFetch(summaryUrl, 120000, signal);
+        if (!res.ok) {
+          const err = new Error(`gene esummary failed: HTTP ${res.status}`);
+          err.status = res.status;
           throw err;
         }
-        const data = await ncbiReadJson(searchRes, signal);
-        if (data?.esearchresult?.ERROR) throw new Error(`NCBI esearch: ${data.esearchresult.ERROR}`);
+        const data = await ncbiReadJson(res, signal);
+        if (data?.error) throw new Error(`NCBI gene esummary: ${data.error}`);
         return data;
       }, signal);
-      const esr = searchData?.esearchresult;
-      const idList = esr?.idlist;
-      if (!idList || idList.length === 0) {
-        throw new Error(`No gene found for "${geneSymbol}" in ${organism}.`);
+      const result = summaryData?.result;
+      const uids = Array.isArray(result?.uids) ? result.uids : candidateIds;
+      let aliasMatchId = '';
+      for (const uid of uids) {
+        const rec = result?.[uid];
+        if (!rec) continue;
+        const official = String(rec.nomenclaturesymbol || rec.name || '').trim().toUpperCase();
+        if (official === requestedUpper) {
+          progressLog(`esearch OK — exact gene symbol match ${requestedSymbol} (gene id ${uid})`);
+          return String(uid);
+        }
+        const aliasesRaw = String(rec.otheraliases || rec.otherdesignations || '');
+        const aliases = aliasesRaw
+          .split(/[;,]/)
+          .map((s) => s.trim().toUpperCase())
+          .filter(Boolean);
+        if (!aliasMatchId && aliases.includes(requestedUpper)) aliasMatchId = String(uid);
       }
-      progressLog(`esearch OK — gene id ${idList[0]}`);
-      return idList[0];
+
+      if (aliasMatchId) {
+        progressLog(`esearch OK — "${requestedSymbol}" matched an alias (gene id ${aliasMatchId})`);
+        return aliasMatchId;
+      }
+
+      const preview = uids
+        .slice(0, 5)
+        .map((uid) => {
+          const rec = result?.[uid];
+          const s = String(rec?.nomenclaturesymbol || rec?.name || '?').trim();
+          return s || '?';
+        })
+        .join(', ');
+      throw new Error(
+        `No exact gene symbol match for "${requestedSymbol}" in ${organism}.` +
+        (preview ? ` NCBI returned: ${preview}.` : '')
+      );
     }
 
     async function elinkRefseqRna(geneId, signal = null) {
