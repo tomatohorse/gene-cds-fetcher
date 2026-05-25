@@ -657,9 +657,9 @@
     }
 
     .status.warning {
-      background: color-mix(in srgb, var(--warning) 16%, transparent);
-      color: var(--warning);
-      border: 1px solid var(--warning);
+      background: rgba(248, 81, 73, 0.15);
+      color: var(--error);
+      border: 1px solid var(--error);
     }
 
     .status .status-success-row {
@@ -3422,9 +3422,9 @@
       }
     }
 
-    function checksHaveErrors() {
+    function checksHaveIssues() {
       const root = document.getElementById('validationBlocks');
-      return !!(root && root.querySelector('.check-block.err'));
+      return !!(root && root.querySelector('.check-block.err, .check-block.attn'));
     }
 
     async function loadCdsAndValidate(signal = null) {
@@ -3449,7 +3449,7 @@
       await runValidation(fasta, geneSymbol, organism, taxid, accession, signal);
       hideStatus();
       setSideTab('checks');
-      if (checksHaveErrors()) {
+      if (checksHaveIssues()) {
         showStatus('Complete with errors - see checks section for details.', 'warning');
       } else {
         showStatus('All checks complete', 'success');
@@ -3488,7 +3488,7 @@
       await runValidation(manualFasta, gene, organism, taxid, 'custom input', signal);
       hideStatus();
       setSideTab('checks');
-      if (checksHaveErrors()) {
+      if (checksHaveIssues()) {
         showStatus('Complete with errors - see checks section for details.', 'warning');
       } else {
         showStatus('All checks complete', 'success');
