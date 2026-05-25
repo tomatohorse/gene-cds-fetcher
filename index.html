@@ -18,6 +18,7 @@
       --accent: #58a6ff;
       --accent-dim: #388bfd66;
       --success: #3fb950;
+      --warning: #E4953C;
       --error: #f85149;
     }
 
@@ -655,6 +656,12 @@
       border: 1px solid var(--success);
     }
 
+    .status.warning {
+      background: color-mix(in srgb, var(--warning) 16%, transparent);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
     .status .status-success-row {
       display: flex;
       align-items: center;
@@ -678,14 +685,14 @@
       background: transparent;
       border: none;
       border-radius: 6px;
-      color: var(--success);
+      color: inherit;
       cursor: pointer;
       text-decoration: none;
     }
 
     .status-dismiss:hover {
-      background: rgba(63, 185, 80, 0.12);
-      color: var(--success);
+      background: color-mix(in srgb, currentColor 12%, transparent);
+      color: inherit;
       transform: none;
       text-decoration: none;
     }
@@ -1097,7 +1104,7 @@
           <option value="Balaena mysticetus" data-taxid="27602">Bowhead Whale (Balaena mysticetus)</option>
           <option value="Deinococcus radiodurans" data-taxid="1299">Deinococcus radiodurans</option>
           <option value="Drosophila melanogaster" data-taxid="7227">Fruit fly (Drosophila melanogaster)</option>
-          <option value="Spalax galili" data-taxid="1026970">Galilee blind mole rat (Spalax galili)</option>
+          <option value="Nannospalax galili" data-taxid="1026970">Galilee blind mole rat (Nannospalax galili)</option>
           <option value="Somniosus microcephalus" data-taxid="191813">Greenland Shark (Somniosus microcephalus)</option>
           <option value="Cavia porcellus" data-taxid="10141">Guinea pig (Cavia porcellus)</option>
           <option value="Homo sapiens" data-taxid="9606">Human (Homo sapiens)</option>
@@ -1919,7 +1926,7 @@
         clearInterval(statusStepTimer);
         statusStepTimer = null;
       }
-      if (type === 'error' || type === 'success') setActiveCheck(null);
+      if (type === 'error' || type === 'success' || type === 'warning') setActiveCheck(null);
 
       const wrap = document.createElement('div');
       wrap.className = `status ${type}`;
@@ -1941,7 +1948,7 @@
         statusStepTimer = setInterval(() => {
           timer.textContent = formatStepElapsed(Date.now() - statusStepStartedAt);
         }, 500);
-      } else if (type === 'success') {
+      } else if (type === 'success' || type === 'warning') {
         const row = document.createElement('div');
         row.className = 'status-success-row';
         const msg = document.createElement('span');
@@ -2016,6 +2023,36 @@
         clearTimeout(t);
         if (externalSignal) externalSignal.removeEventListener('abort', onExternalAbort);
       }
+    }
+
+    function isTransientNcbiErrorMessage(msg) {
+      const s = String(msg || '');
+      return (
+        /ncbi c\+\+ exception/i.test(s) ||
+        /read failed:\s*eof/i.test(s) ||
+        /timed out/i.test(s) ||
+        /networkerror/i.test(s) ||
+        /failed to fetch/i.test(s)
+      );
+    }
+
+    async function withNcbiRetry(label, op, signal = null, maxAttempts = 4, initialDelayMs = 600) {
+      let lastErr = null;
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          return await op();
+        } catch (err) {
+          if (err?.name === 'AbortError') throw err;
+          lastErr = err;
+          const msg = err?.message || String(err);
+          const shouldRetry = isTransientNcbiErrorMessage(msg);
+          if (!shouldRetry || attempt >= maxAttempts) break;
+          const waitMs = initialDelayMs * (2 ** (attempt - 1));
+          progressLog(`${label}: transient NCBI error (attempt ${attempt}/${maxAttempts}); retrying in ${Math.round(waitMs / 100) / 10}s…`);
+          await delay(waitMs, signal);
+        }
+      }
+      throw lastErr || new Error(`${label} failed`);
     }
 
     async function delay(ms, externalSignal = null) {
@@ -2165,11 +2202,18 @@
     async function esearchGene(organism, geneSymbol, signal = null) {
       progressLog('NCBI esearch (gene): looking up symbol + organism…');
       const searchUrl = `${NCBI_BASE}/esearch.fcgi?db=gene&term=${encodeURIComponent(geneSymbol + '[Gene] AND ' + organism + '[orgn]')}&retmode=json`;
-      const searchRes = await ncbiFetch(searchUrl, 120000, signal);
-      if (!searchRes.ok) throw new Error(`esearch failed: HTTP ${searchRes.status}`);
-      const searchData = await ncbiReadJson(searchRes, signal);
+      const searchData = await withNcbiRetry('NCBI esearch', async () => {
+        const searchRes = await ncbiFetch(searchUrl, 120000, signal);
+        if (!searchRes.ok) {
+          const err = new Error(`esearch failed: HTTP ${searchRes.status}`);
+          err.status = searchRes.status;
+          throw err;
+        }
+        const data = await ncbiReadJson(searchRes, signal);
+        if (data?.esearchresult?.ERROR) throw new Error(`NCBI esearch: ${data.esearchresult.ERROR}`);
+        return data;
+      }, signal);
       const esr = searchData?.esearchresult;
-      if (esr?.ERROR) throw new Error(`NCBI esearch: ${esr.ERROR}`);
       const idList = esr?.idlist;
       if (!idList || idList.length === 0) {
         throw new Error(`No gene found for "${geneSymbol}" in ${organism}.`);
@@ -2181,9 +2225,17 @@
     async function elinkRefseqRna(geneId, signal = null) {
       progressLog('NCBI elink: gene → RefSeq RNA (nuccore)…');
       const linkUrl = `${NCBI_BASE}/elink.fcgi?dbfrom=gene&db=nuccore&id=${geneId}&linkname=gene_nuccore_refseqrna&retmode=json`;
-      const linkRes = await ncbiFetch(linkUrl, 120000, signal);
-      if (!linkRes.ok) throw new Error(`elink failed: HTTP ${linkRes.status}`);
-      const linkData = await ncbiReadJson(linkRes, signal);
+      const linkData = await withNcbiRetry('NCBI elink', async () => {
+        const linkRes = await ncbiFetch(linkUrl, 120000, signal);
+        if (!linkRes.ok) {
+          const err = new Error(`elink failed: HTTP ${linkRes.status}`);
+          err.status = linkRes.status;
+          throw err;
+        }
+        const data = await ncbiReadJson(linkRes, signal);
+        if (data?.ERROR) throw new Error(`NCBI elink: ${data.ERROR}`);
+        return data;
+      }, signal);
       const links = linkData?.linksets?.[0]?.linksetdbs?.[0]?.links;
       if (!links || links.length === 0) {
         throw new Error('No RefSeq RNA linked for this gene.');
@@ -2199,9 +2251,17 @@
       for (let i = 0; i < ids.length; i += chunkSize) {
         const chunk = ids.slice(i, i + chunkSize);
         const url = `${NCBI_BASE}/esummary.fcgi?db=nuccore&id=${chunk.join(',')}&retmode=json`;
-        const res = await ncbiFetch(url, 120000, signal);
-        if (!res.ok) throw new Error(`esummary failed: HTTP ${res.status}`);
-        const data = await ncbiReadJson(res, signal);
+        const data = await withNcbiRetry('NCBI esummary', async () => {
+          const res = await ncbiFetch(url, 120000, signal);
+          if (!res.ok) {
+            const err = new Error(`esummary failed: HTTP ${res.status}`);
+            err.status = res.status;
+            throw err;
+          }
+          const parsed = await ncbiReadJson(res, signal);
+          if (parsed?.error) throw new Error(`NCBI esummary: ${parsed.error}`);
+          return parsed;
+        }, signal);
         const result = data.result;
         if (!result || !result.uids) continue;
         for (const uid of result.uids) {
@@ -3362,6 +3422,11 @@
       }
     }
 
+    function checksHaveErrors() {
+      const root = document.getElementById('validationBlocks');
+      return !!(root && root.querySelector('.check-block.err'));
+    }
+
     async function loadCdsAndValidate(signal = null) {
       if (!lastContext) return;
       void ensureAudioContext();
@@ -3384,7 +3449,11 @@
       await runValidation(fasta, geneSymbol, organism, taxid, accession, signal);
       hideStatus();
       setSideTab('checks');
-      showStatus('All checks complete', 'success');
+      if (checksHaveErrors()) {
+        showStatus('Complete with errors - see checks section for details.', 'warning');
+      } else {
+        showStatus('All checks complete', 'success');
+      }
       void playChecksDoneSound();
     }
 
@@ -3419,7 +3488,11 @@
       await runValidation(manualFasta, gene, organism, taxid, 'custom input', signal);
       hideStatus();
       setSideTab('checks');
-      showStatus('All checks complete', 'success');
+      if (checksHaveErrors()) {
+        showStatus('Complete with errors - see checks section for details.', 'warning');
+      } else {
+        showStatus('All checks complete', 'success');
+      }
       void playChecksDoneSound();
     }
 
@@ -3541,7 +3614,7 @@
       /* Progress log lives on the Progress tab; show it during fetch so work is visible immediately. */
       setSideTab('progress');
       progressLogClear();
-      progressLog(`Fetch CDS for "${gene}" (${organism})`);
+      progressLog(`Fetch CDS for ${gene} in ${organism}${taxid ? ` (${taxid})` : ''}`);
 
       const signal = startActiveJob();
       try {
