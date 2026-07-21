@@ -391,7 +391,7 @@
       box-shadow: 0 0 0 3px var(--accent-dim);
     }
 
-    #gene {
+    #gene, #organism {
       background-color: var(--surface);
       color: var(--text);
       -webkit-appearance: none;
@@ -1097,26 +1097,27 @@
     <form class="form" id="searchForm">
       <div class="field">
         <label for="organism">Organism</label>
-        <select id="organism" required>
-          <option value="Saccharomyces cerevisiae" data-taxid="4932">Baker's yeast (Saccharomyces cerevisiae)</option>
-          <option value="Eptesicus fuscus" data-taxid="29078">Big brown bat (Eptesicus fuscus)</option>
-          <option value="Pteropus alecto" data-taxid="9402">Black flying fox (Pteropus alecto)</option>
-          <option value="Balaena mysticetus" data-taxid="27602">Bowhead Whale (Balaena mysticetus)</option>
-          <option value="Deinococcus radiodurans" data-taxid="1299">Deinococcus radiodurans</option>
-          <option value="Drosophila melanogaster" data-taxid="7227">Fruit fly (Drosophila melanogaster)</option>
-          <option value="Nannospalax galili" data-taxid="1026970">Galilee blind mole rat (Nannospalax galili)</option>
-          <option value="Somniosus microcephalus" data-taxid="191813">Greenland Shark (Somniosus microcephalus)</option>
-          <option value="Cavia porcellus" data-taxid="10141">Guinea pig (Cavia porcellus)</option>
-          <option value="Homo sapiens" data-taxid="9606">Human (Homo sapiens)</option>
-          <option value="Hypsibius dujardini" data-taxid="232323">Hypsibius dujardini</option>
-          <option value="Myotis lucifugus" data-taxid="59463">Little brown bat (Myotis lucifugus)</option>
-          <option value="Mus musculus" data-taxid="10090">Mouse (Mus musculus)</option>
-          <option value="Myotis davidii" data-taxid="225400">Myotis davidii</option>
-          <option value="Heterocephalus glaber" data-taxid="10181">Naked Mole Rat (Heterocephalus glaber)</option>
-          <option value="Rattus norvegicus" data-taxid="10116">Rat (Rattus norvegicus)</option>
-          <option value="Mus musculus" data-taxid="10090">Snell Dwarf Mouse (Mus musculus)</option>
-          <option value="Trichoplax adhaerens" data-taxid="10228">Trichoplax adhaerens</option>
-        </select>
+        <input type="text" id="organism" list="organismList" placeholder="e.g. Homo sapiens" value="Saccharomyces cerevisiae" required autocomplete="off" spellcheck="false">
+        <datalist id="organismList">
+          <option value="Saccharomyces cerevisiae" label="Baker's yeast (Saccharomyces cerevisiae)"></option>
+          <option value="Eptesicus fuscus" label="Big brown bat (Eptesicus fuscus)"></option>
+          <option value="Pteropus alecto" label="Black flying fox (Pteropus alecto)"></option>
+          <option value="Balaena mysticetus" label="Bowhead Whale (Balaena mysticetus)"></option>
+          <option value="Deinococcus radiodurans" label="Deinococcus radiodurans"></option>
+          <option value="Drosophila melanogaster" label="Fruit fly (Drosophila melanogaster)"></option>
+          <option value="Nannospalax galili" label="Galilee blind mole rat (Nannospalax galili)"></option>
+          <option value="Somniosus microcephalus" label="Greenland Shark (Somniosus microcephalus)"></option>
+          <option value="Cavia porcellus" label="Guinea pig (Cavia porcellus)"></option>
+          <option value="Homo sapiens" label="Human (Homo sapiens)"></option>
+          <option value="Hypsibius dujardini" label="Hypsibius dujardini"></option>
+          <option value="Myotis lucifugus" label="Little brown bat (Myotis lucifugus)"></option>
+          <option value="Mus musculus" label="Mouse (Mus musculus)"></option>
+          <option value="Myotis davidii" label="Myotis davidii"></option>
+          <option value="Heterocephalus glaber" label="Naked Mole Rat (Heterocephalus glaber)"></option>
+          <option value="Rattus norvegicus" label="Rat (Rattus norvegicus)"></option>
+          <option value="Trichoplax adhaerens" label="Trichoplax adhaerens"></option>
+        </datalist>
+        <p class="field-help">Type any NCBI scientific name, or pick a suggestion. Taxid numbers (e.g. 9606) also work.</p>
       </div>
 
       <div class="field">
@@ -1248,6 +1249,27 @@
     const MANUAL_INPUT_LABEL = 'manual CDS input';
     const STOPS = new Set(['TAA', 'TAG', 'TGA']);
     const DNA_BASES = new Set(['A', 'T', 'C', 'G']);
+    /** Scientific name → NCBI taxid for datalist presets (and fast path before Taxonomy lookup). */
+    const ORGANISM_TAXIDS = Object.freeze({
+      'Saccharomyces cerevisiae': 4932,
+      'Eptesicus fuscus': 29078,
+      'Pteropus alecto': 9402,
+      'Balaena mysticetus': 27602,
+      'Deinococcus radiodurans': 1299,
+      'Drosophila melanogaster': 7227,
+      'Nannospalax galili': 1026970,
+      'Somniosus microcephalus': 191813,
+      'Cavia porcellus': 10141,
+      'Homo sapiens': 9606,
+      'Hypsibius dujardini': 232323,
+      'Myotis lucifugus': 59463,
+      'Mus musculus': 10090,
+      'Myotis davidii': 225400,
+      'Heterocephalus glaber': 10181,
+      'Rattus norvegicus': 10116,
+      'Trichoplax adhaerens': 10228,
+    });
+    const organismTaxidCache = new Map();
     const CODON_TO_AA = Object.freeze({
       TTT: 'F', TTC: 'F', TTA: 'L', TTG: 'L',
       TCT: 'S', TCC: 'S', TCA: 'S', TCG: 'S',
@@ -1493,13 +1515,13 @@
     }
 
     function restoreLastSearchForm() {
-      const sel = document.getElementById('organism');
+      const org = document.getElementById('organism');
       const inp = document.getElementById('gene');
-      if (!sel || !inp) return;
+      if (!org || !inp) return;
       try {
         const o = localStorage.getItem(LS_LAST_ORGANISM);
         const g = localStorage.getItem(LS_LAST_GENE);
-        if (o && [...sel.options].some((opt) => opt.value === o)) sel.value = o;
+        if (o) org.value = o;
         if (g != null && g !== '') inp.value = g;
       } catch (e) { /* ignore */ }
     }
@@ -2193,21 +2215,150 @@
       return String(a || '').split('.')[0] || '';
     }
 
-    function selectedTaxid() {
-      const opt = document.getElementById('organism').selectedOptions[0];
-      const t = opt && opt.getAttribute('data-taxid');
-      return t ? parseInt(t, 10) : null;
+    function lookupPresetTaxid(name) {
+      const key = String(name || '').trim();
+      if (!key) return null;
+      if (Object.prototype.hasOwnProperty.call(ORGANISM_TAXIDS, key)) {
+        return { organism: key, taxid: ORGANISM_TAXIDS[key] };
+      }
+      const lower = key.toLowerCase();
+      for (const [sci, taxid] of Object.entries(ORGANISM_TAXIDS)) {
+        if (sci.toLowerCase() === lower) return { organism: sci, taxid };
+      }
+      return null;
     }
 
-    async function esearchGene(organism, geneSymbol, signal = null) {
+    function parseTaxidInput(raw) {
+      const s = String(raw || '').trim();
+      if (!s) return null;
+      let m = s.match(/^(?:txid|taxid)[:\s]*(\d+)$/i);
+      if (m) return parseInt(m[1], 10);
+      if (/^\d+$/.test(s)) return parseInt(s, 10);
+      return null;
+    }
+
+    async function esummaryTaxonomy(taxid, signal = null) {
+      const url = `${NCBI_BASE}/esummary.fcgi?db=taxonomy&id=${taxid}&retmode=json`;
+      const data = await withNcbiRetry('NCBI taxonomy esummary', async () => {
+        const res = await ncbiFetch(url, 120000, signal);
+        if (!res.ok) {
+          const err = new Error(`taxonomy esummary failed: HTTP ${res.status}`);
+          err.status = res.status;
+          throw err;
+        }
+        const json = await ncbiReadJson(res, signal);
+        if (json?.error) throw new Error(`NCBI taxonomy esummary: ${json.error}`);
+        return json;
+      }, signal);
+      const doc = data?.result?.[String(taxid)];
+      const sci = doc && (doc.scientificname || doc.scientificName);
+      return sci ? String(sci).trim() : null;
+    }
+
+    async function esearchTaxonomyName(name, signal = null) {
+      const terms = [
+        `"${name}"[Scientific Name]`,
+        `"${name}"[Organism]`,
+        name,
+      ];
+      for (let i = 0; i < terms.length; i++) {
+        const term = terms[i];
+        const searchUrl = `${NCBI_BASE}/esearch.fcgi?db=taxonomy&term=${encodeURIComponent(term)}&retmax=5&retmode=json`;
+        const searchData = await withNcbiRetry('NCBI taxonomy esearch', async () => {
+          const searchRes = await ncbiFetch(searchUrl, 120000, signal);
+          if (!searchRes.ok) {
+            const err = new Error(`taxonomy esearch failed: HTTP ${searchRes.status}`);
+            err.status = searchRes.status;
+            throw err;
+          }
+          const data = await ncbiReadJson(searchRes, signal);
+          if (data?.esearchresult?.ERROR) throw new Error(`NCBI taxonomy esearch: ${data.esearchresult.ERROR}`);
+          return data;
+        }, signal);
+        const idList = searchData?.esearchresult?.idlist;
+        if (idList && idList.length) {
+          const taxid = parseInt(idList[0], 10);
+          if (!Number.isFinite(taxid)) continue;
+          let scientificName = name;
+          try {
+            const resolved = await esummaryTaxonomy(taxid, signal);
+            if (resolved) scientificName = resolved;
+          } catch (e) {
+            if (e?.name === 'AbortError') throw e;
+            /* keep typed name if esummary fails */
+          }
+          return { organism: scientificName, taxid };
+        }
+        if (i === 0) progressLog(`No exact scientific-name hit for “${name}” — trying broader Taxonomy search…`);
+      }
+      return null;
+    }
+
+    /**
+     * Resolve typed organism (scientific name, preset, or taxid) to
+     * { organism: scientificName, taxid: number|null } for gene search + BLAST.
+     */
+    async function resolveOrganism(raw, signal = null) {
+      const input = String(raw || '').trim();
+      if (!input) throw new Error('Organism is required.');
+
+      const cacheKey = input.toLowerCase();
+      if (organismTaxidCache.has(cacheKey)) return organismTaxidCache.get(cacheKey);
+
+      const asTaxid = parseTaxidInput(input);
+      if (asTaxid != null) {
+        progressLog(`Resolving taxid ${asTaxid} via NCBI Taxonomy…`);
+        let scientificName = null;
+        try {
+          scientificName = await esummaryTaxonomy(asTaxid, signal);
+        } catch (e) {
+          if (e?.name === 'AbortError') throw e;
+          progressLog(`Taxonomy lookup for taxid ${asTaxid} failed — using taxid only.`);
+        }
+        const resolved = { organism: scientificName || `txid${asTaxid}`, taxid: asTaxid };
+        organismTaxidCache.set(cacheKey, resolved);
+        if (scientificName) organismTaxidCache.set(scientificName.toLowerCase(), resolved);
+        return resolved;
+      }
+
+      const preset = lookupPresetTaxid(input);
+      if (preset) {
+        organismTaxidCache.set(cacheKey, preset);
+        return preset;
+      }
+
+      progressLog(`Resolving organism “${input}” via NCBI Taxonomy…`);
+      try {
+        const hit = await esearchTaxonomyName(input, signal);
+        if (hit) {
+          organismTaxidCache.set(cacheKey, hit);
+          organismTaxidCache.set(hit.organism.toLowerCase(), hit);
+          progressLog(`Resolved “${input}” → ${hit.organism} (taxid ${hit.taxid})`);
+          return hit;
+        }
+        const fallback = { organism: input, taxid: null };
+        organismTaxidCache.set(cacheKey, fallback);
+        progressLog(`No Taxonomy taxid for “${input}” — same-species BLAST will be unscoped.`);
+        return fallback;
+      } catch (e) {
+        if (e?.name === 'AbortError') throw e;
+        progressLog(`Taxonomy lookup failed (${e.message || e}) — searching gene DB with typed name.`);
+        return { organism: input, taxid: null };
+      }
+    }
+
+    async function esearchGene(organism, geneSymbol, signal = null, taxid = null) {
       const requestedSymbol = String(geneSymbol || '').trim();
       const requestedUpper = requestedSymbol.toUpperCase();
       if (!requestedSymbol) throw new Error('Gene symbol is required.');
 
       progressLog('NCBI esearch (gene): looking up symbol + organism…');
+      const orgn = taxid != null
+        ? `txid${taxid}[Organism]`
+        : `"${organism}"[orgn]`;
       const terms = [
-        `"${requestedSymbol}"[sym] AND ${organism}[orgn]`,
-        `${requestedSymbol}[Gene] AND ${organism}[orgn]`,
+        `"${requestedSymbol}"[sym] AND ${orgn}`,
+        `${requestedSymbol}[Gene] AND ${orgn}`,
       ];
       let candidateIds = [];
       for (let i = 0; i < terms.length; i++) {
@@ -3590,13 +3741,12 @@
 
     manualRunBtn?.addEventListener('click', async () => {
       void ensureAudioContext();
-      const organism = document.getElementById('organism').value;
+      const organismRaw = document.getElementById('organism').value.trim();
       const gene = document.getElementById('gene').value.trim();
-      const taxid = selectedTaxid();
       const manualCdsRaw = (manualCdsInput?.value || '').trim();
-      if (!manualCdsRaw) return;
+      if (!manualCdsRaw || !organismRaw) return;
 
-      saveLastSearchForm(organism, gene);
+      saveLastSearchForm(organismRaw, gene);
       searchBtn.disabled = true;
       manualRunBtn.disabled = true;
       transcriptSelectionToken++;
@@ -3611,6 +3761,10 @@
 
       const signal = startActiveJob();
       try {
+        const { organism, taxid } = await resolveOrganism(organismRaw, signal);
+        const orgInput = document.getElementById('organism');
+        if (orgInput && organism && organism !== organismRaw) orgInput.value = organism;
+        saveLastSearchForm(organism, gene);
         await runManualCdsAndValidate({ organism, gene, taxid, manualCdsRaw, signal });
       } catch (err) {
         if (err.name === 'AbortError') {
@@ -3658,13 +3812,12 @@
     searchForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       void ensureAudioContext();
-      const organism = document.getElementById('organism').value;
+      const organismRaw = document.getElementById('organism').value.trim();
       const gene = document.getElementById('gene').value.trim();
-      const taxid = selectedTaxid();
 
-      if (!gene) return;
+      if (!gene || !organismRaw) return;
 
-      saveLastSearchForm(organism, gene);
+      saveLastSearchForm(organismRaw, gene);
 
       searchBtn.disabled = true;
       if (manualRunBtn) manualRunBtn.disabled = true;
@@ -3677,14 +3830,20 @@
       /* Progress log lives on the Progress tab; show it during fetch so work is visible immediately. */
       setSideTab('progress');
       progressLogClear();
-      progressLog(`Fetch CDS for ${gene} in ${organism}${taxid ? ` (${taxid})` : ''}`);
+      progressLog(`Fetch CDS for ${gene} in ${organismRaw}`);
 
       const signal = startActiveJob();
       try {
         await paintYield();
-        showStatus('Step: Resolving gene and RefSeq transcripts (esearch → elink → esummary)…', 'loading');
+        showStatus('Step: Resolving organism, gene, and RefSeq transcripts…', 'loading');
         await yieldToMain(signal);
-        const geneId = await esearchGene(organism, gene, signal);
+        const { organism, taxid } = await resolveOrganism(organismRaw, signal);
+        const orgInput = document.getElementById('organism');
+        if (orgInput && organism && organism !== organismRaw) orgInput.value = organism;
+        saveLastSearchForm(organism, gene);
+        progressLog(`Fetch CDS for ${gene} in ${organism}${taxid ? ` (taxid ${taxid})` : ''}`);
+        await delay(300, signal);
+        const geneId = await esearchGene(organism, gene, signal, taxid);
         await delay(300, signal);
         const links = await elinkRefseqRna(geneId, signal);
         await delay(300, signal);

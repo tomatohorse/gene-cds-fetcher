@@ -4,7 +4,7 @@ A simple web tool to search NCBI for an organism and gene, then retrieve and dis
 
 ## Features
 
-- **Organism dropdown** – Select from common organisms; each option includes an NCBI **taxid** (`data-taxid`) used to limit BLAST searches.
+- **Organism field** – Type any NCBI scientific name (or a taxid). Suggestions cover common organisms; unknown names are resolved via NCBI Taxonomy so BLAST can still use `txidN[ORGN]`.
 - **Gene search** – Type a gene symbol (e.g. Ercc1, TP53, BRCA1).
 - **Transcript picker** – Lists linked RefSeq RNAs (`NM_`) from NCBI Gene; you choose which transcript before CDS fetch.
 - **NCBI integration** – Uses E-utilities (esearch, elink, esummary, efetch) to resolve the gene, summarize transcripts, and download `fasta_cds_na`.
@@ -28,15 +28,17 @@ The server serves the page and proxies NCBI requests to avoid CORS issues.
 
 Open `index.html` in a browser. NCBI JSON endpoints (esearch, elink) work directly, but CDS fetching uses a public CORS proxy (allorigins.win), which may be slower or less reliable.
 
-## Adding organisms
+## Organism suggestions
 
-Edit the `<select id="organism">` in `index.html` and add options like:
+You can type any scientific name without editing the app. To add a **quick-pick** suggestion, edit the `<datalist id="organismList">` in `index.html` and the matching entry in the `ORGANISM_TAXIDS` map (same file), e.g.:
 
 ```html
-<option value="Scientific name">Common name (Scientific name)</option>
+<option value="Mus musculus" label="Mouse (Mus musculus)"></option>
 ```
 
-The `value` must be the organism’s scientific name as used by NCBI (e.g. `Mus musculus`, `Homo sapiens`).
+```js
+'Mus musculus': 10090,
+```
 
 ## Technical notes
 
